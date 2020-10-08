@@ -1,7 +1,5 @@
 # ПКУ: Программный комплекс участника конкурса Readable
 
-[![Scripts sets up by @solid-soda/scripts v2.2.0](https://img.shields.io/static/v1?label=@solid-soda/scripts&message=2.2.0&color=75ddf4)](https://github.com/solid-soda/scripts)
-
 ## Вводные данные
 
 ПКУ предназначен для
@@ -98,11 +96,23 @@
 
 ## Решение типовых ошибок
 
+### docker-compose pull: permission denied
+
 Если у вас не запускается контейнер, не пулится образ или permission denied, рекомендуем:
 
 1. Проверить что у вас скачена последняя версия docker с официального сайта
 2. Проверить что у вас скачена последняя версия docker-compose
 3. Проверить что вы выполнили [рекомендации пост-установки Docker](https://docs.docker.com/engine/install/linux-postinstall/) в части работы из под non-root пользователя.
+
+### docker-compose pull: не скачивает образ
+
+При выполнении `docker-compose pull` ничего не происходит
+
+```sh
+export $(cat .env | grep READEABLE_PKU)
+export $(cat .env | grep TAG)
+docker pull $READEABLE_PKU:$TAG
+```
 
 ## Конфигурация
 
@@ -124,8 +134,9 @@ docker-compose up -d --force-recreate
 
 ## Обратная связь
 
-Если вы хотите добавить **issue** или прислать **pull request** - пишите на почту [readable@webpractik.ru](mailto:readable@webpractik.ru), мы добавим вас в приватный репозиторий.
+Если у вас есть предложения - оформляйте **issue** или присылайте **pull request**.
+Помимо этого можно присылать предложения на почту [readable@webpractik.ru](mailto:readable@webpractik.ru).
 
 ## Права
 
-Код предназначен для участников конкурса ПРО//ЧТЕНИЕ у которых одобрена заявка на участие в конкурсе.
+Код предназначен для участников конкурса [ПРО//ЧТЕНИЕ](https://ai.upgreat.one/) у которых одобрена заявка на участие в конкурсе.
