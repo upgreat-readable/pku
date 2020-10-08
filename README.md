@@ -96,11 +96,23 @@
 
 ## Решение типовых ошибок
 
+### docker-compose pull: permission denied
+
 Если у вас не запускается контейнер, не пулится образ или permission denied, рекомендуем:
 
 1. Проверить что у вас скачена последняя версия docker с официального сайта
 2. Проверить что у вас скачена последняя версия docker-compose
 3. Проверить что вы выполнили [рекомендации пост-установки Docker](https://docs.docker.com/engine/install/linux-postinstall/) в части работы из под non-root пользователя.
+
+### docker-compose pull: не скачивает образ
+
+При выполнении `docker-compose pull` ничего не происходит
+
+```sh
+export $(cat .env | grep READEABLE_PKU)
+export $(cat .env | grep TAG)
+docker pull $READEABLE_PKU:$TAG
+```
 
 ## Конфигурация
 
