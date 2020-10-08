@@ -1,0 +1,13 @@
+version: '3.4'
+
+# networks:
+#   localhost:
+#     external: true
+
+services:
+    node-pku:
+        volumes:
+            - '${PWD}/build:/app/build:delegated'
+            - '${PWD}/files:/app/files:delegated'
+            - '${PWD}/node_modules:/app/node_modules:delegated'
+            - '${PWD}/logs:/app/logs'

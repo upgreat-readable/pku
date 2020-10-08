@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+    node-pku:
+        container_name: ${COMPOSE_PROJECT_NAME}_node
+        image: ${READEABLE_PKU}:${TAG}
+        command: ['/app/build/index.js']
+        build:
+            context: $PWD
+            dockerfile: $PWD/.docker/node-pku/Dockerfile
+            args:
+                - UID
+                - GID
+        environment:
+            - UID
+            - USER_TOKEN
+            - DEBUG_FLAG
+            - DEBUG_ADDRESS
+            - DISLOCATION
+            - GID
+            - LOG_FORMAT
+        volumes:
+            - '${PWD}/files:/app/files'
+            - '${PWD}/logs:/app/logs'

@@ -1,0 +1,12 @@
+/.idea
+.env
+.txt
+
+/build
+
+/logs
+!/logs/.gitkeep
+
+/files/**/*.json
+
+/node_modules

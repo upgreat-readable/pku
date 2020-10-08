@@ -1,0 +1,17 @@
+.yarn
+node_modules
+.pnp.js
+.vscode
+/.idea
+.env
+.txt
+
+/build
+
+/logs
+!/logs/.gitkeep
+
+/files/**/*.json
+
+/node_modules
+/package-lock.json
