@@ -15,14 +15,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+ssh://git@gitlab.com/webpractik/readable-pku.git"
+        "url": "git+ssh://git@github.com:upgreat-readable/pku.git"
     },
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://gitlab.com/webpractik/readable-pku/issues"
+        "url": "https://github.com/upgreat-readable/pku/issues"
     },
-    "homepage": "https://gitlab.com/webpractik/readable-pku#readme",
+    "homepage": "https://github.com/upgreat-readable/pku#readme",
     "dependencies": {
         "@types/node-ipc": "^9.1.3",
         "@types/socket.io": "^2.1.11",
