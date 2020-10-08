@@ -1,0 +1,26 @@
+---
+name: build-and-push-docker-image
+on:
+  release: # Запускать workflow при создании релиза
+    types:
+      - created
+jobs:
+  build-and-push-docker-image:
+    runs-on: self-hosted
+    env:
+      YANDEX_SECRET: ${{ secrets.YANDEX_DOCKER_PASS }}
+    steps:
+      - name: Check out repository #git clone current repo
+        uses: actions/checkout@v2
+      - run: pwd
+      - run: ls -l
+      - run: npm install
+      - run: npm run build
+      - run: cp .env.example .env
+      - run: docker-compose build
+      - run: docker-compose up -d
+      - run: sleep 5
+      - run: ./pku psr --fileId 800001 800002 800003
+      - run: docker-compose down
+      - run: docker login --username oauth --password $YANDEX_SECRET cr.yandex
+      - run: docker-compose push
