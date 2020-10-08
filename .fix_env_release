@@ -1,0 +1,10 @@
+#!/bin/bash
+
+NEW_ENV=$(cat .version)
+
+sed -i "s/TAG=.*/TAG=$NEW_ENV/" .env
+sed -i "s/TAG=.*/TAG=$NEW_ENV/" .env.example
+sed -i "s/TAG=.*/TAG=$NEW_ENV/" .env.dev
+
+git add .env.example .env.dev && \
+git commit -m "chore(release): $NEW_ENV"
