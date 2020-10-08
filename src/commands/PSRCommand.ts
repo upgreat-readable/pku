@@ -41,6 +41,7 @@ class PSRCommand extends AbstractCommand {
             console.log(
                 'Во время расчёта метрик с помощью ПСР произошла ошибка.' + '\n' + e.message
             );
+            process.exit(1);
         }
     };
 

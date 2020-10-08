@@ -71,6 +71,7 @@ class CriteriaCommand extends AbstractCommand {
         } catch (e) {
             // logger.error('Пакет критериев - ошибка' + e.message)
             console.log('Во время расчёта критериев произошла ошибка.' + '\n' + e.message);
+            process.exit(1);
         }
     };
 
