@@ -16,7 +16,7 @@ class CliException extends Error {
         CliException.showMessage(message);
 
         // принудительно выходим чтобы не вывелся стандартный trace
-        process.exit();
+        process.exit(1);
     }
 
     private static showMessage(message: string) {
