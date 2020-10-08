@@ -1,7 +1,5 @@
 # ПКУ: Программный комплекс участника конкурса Readable
 
-[![Scripts sets up by @solid-soda/scripts v2.2.0](https://img.shields.io/static/v1?label=@solid-soda/scripts&message=2.2.0&color=75ddf4)](https://github.com/solid-soda/scripts)
-
 ## Вводные данные
 
 ПКУ предназначен для
