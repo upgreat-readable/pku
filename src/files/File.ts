@@ -8,8 +8,9 @@ export class File {
     public jsonFileContent: object;
 
     constructor(file: { fileId?: string; filePath?: string; dir?: string }) {
-        // @ts-ignore
-        this.id = file.fileId.toString();
+        if (file.fileId) {
+            this.id = file.fileId.toString();
+        }
         this.dir = file.dir;
         this.path = file.filePath;
 

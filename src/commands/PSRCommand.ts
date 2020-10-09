@@ -13,7 +13,7 @@ class PSRCommand extends AbstractCommand {
     description: string = 'Команда расчета метрик';
 
     protected bindOptions(command: Command) {
-        command.option('--fileId <fileId...>', 'перечень id файла в папке files/custom', false);
+        command.option('--fileId <fileId...>', 'перечень id файла в папке files/custom');
         command.option(
             '--filePath <filePath...>',
             'перечень путей к файлу относительно папки files | --filePath myDir/filepathWithExtension.json',
@@ -46,15 +46,17 @@ class PSRCommand extends AbstractCommand {
     };
 
     protected validateOptions(options: FileOptions) {
-        //@ts-ignore
-        options.fileId.forEach((value, index, array) => {
-            if (value <= 0 || isNaN(value)) {
-                throw new CliException('параметры fileId должны быть числами');
+        if (!options.fileId && !options.filePath) {
+            throw new CliException('Обязательные параметры не были заполнены.');
+
+            if (options.fileId) {
+                //@ts-ignore
+                options.fileId.forEach((value, index, array) => {
+                    if (value <= 0 || isNaN(value)) {
+                        throw new CliException('параметры fileId должны быть числами');
+                    }
+                });
             }
-        });
-        // @ts-ignore
-        if (options.fileId.lenght < 1) {
-            throw new CliException('Обязательные параметры --fileId не был заполнен.');
         }
     }
 }

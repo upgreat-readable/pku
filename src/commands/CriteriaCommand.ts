@@ -15,7 +15,7 @@ class CriteriaCommand extends AbstractCommand {
     description: string = 'Команда расчета критериев';
 
     protected bindOptions(command: Command) {
-        command.option('--fileId <fileId>', 'id файла в папке files/custom');
+        command.option('--fileId <fileId>', 'id файла в папке files/custom', /^\d+$/);
         command.option(
             '--filePath <filePath>',
             'путь к файлу относительно папки files | --filePath myDir/filepathWithExtension.json'
@@ -69,21 +69,20 @@ class CriteriaCommand extends AbstractCommand {
                 console.log(service.getResult());
             }
         } catch (e) {
-            // logger.error('Пакет критериев - ошибка' + e.message)
-            console.log('Во время расчёта критериев произошла ошибка.' + '\n' + e.message);
+            logger.error('Во время расчёта критериев произошла ошибка.' + '\n' + e.message);
             process.exit(1);
         }
     };
 
     protected validateOptions(options: FileOptions) {
-        if (!options.fileId) {
-            throw new CliException('Обязательный параметр --fileId не был заполнен.');
-        }
+        if (!options.fileId && !options.filePath) {
+            throw new CliException('Обязательные параметры не были заполнены.');
 
-        // @ts-ignore
-        const fileId = parseInt(options.fileId);
-        if (fileId <= 0 || isNaN(fileId)) {
-            throw new CliException('параметр fileId должен быть числом');
+            // @ts-ignore
+            const fileId = parseInt(options.fileId);
+            if (fileId <= 0 || isNaN(fileId)) {
+                throw new CliException('параметр fileId должен быть числом');
+            }
         }
     }
 }
