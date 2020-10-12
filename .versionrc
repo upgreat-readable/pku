@@ -3,6 +3,10 @@
     {
       "filename": ".version",
       "type": "plain-text"
+    },
+    {
+      "filename": "package.json",
+      "type": "plain-text"
     }
   ]
 }
