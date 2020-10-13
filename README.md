@@ -12,7 +12,7 @@
 
 -   [docker](https://docs.docker.com/get-docker/)
 -   [docker-compose](https://docs.docker.com/compose/install/) последней версии. (Не менее версии 1.24)
--   linux окружение (bash оболочка) на машине, с которой запускается docker
+-   [linux окружение](./docs/platform.md) (bash оболочка) на машине, с которой запускается docker
 -   Быть зарегистрированным участником на [платформе](https://readable.upgreat.one)
 
 Используйте [рекомендации пост-установки](https://docs.docker.com/engine/install/linux-postinstall/) Docker.
