@@ -4,8 +4,6 @@
 
 /build
 
-/logs
-!/logs/.gitkeep
 
 /files/**/*.json
 

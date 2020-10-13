@@ -1,9 +1,12 @@
 import io from 'socket.io-client';
 import logger from '../logger';
 import fs from 'fs';
+import { File } from '../files/File';
+import { DemoMoveFileService } from '../service/DemoMoveFileService';
 
 export class SocketIoClient {
     isConnected: boolean = false;
+    demoMode: boolean = false;
 
     // @ts-ignore
     socket: SocketIOClient.Socket;
@@ -79,7 +82,14 @@ export class SocketIoClient {
             })
             .on('session-file-available', (data: any) => {
                 logger.info(`Стал доступен файл ${data.fileId} в сессии @todo`);
-                this.saveFile(data);
+
+                /** Если ПКУ был запущен с флагом demo true - при сохрании файл доразмечается,
+                 * отправляется в папку out и отправляется на сервер. */
+                if (this.demoMode) {
+                    this.saveFileInDemoMode(data);
+                } else {
+                    this.saveFile(data);
+                }
             })
 
             // ABORT
@@ -111,6 +121,23 @@ export class SocketIoClient {
             fs.writeFileSync('files/in/' + data.fileId + '.json', JSON.stringify(data.content));
         } catch (e) {
             logger.error('файл ' + data.fileId + ' не был сохранен с ошибкой' + e.message);
+        }
+    }
+
+    private saveFileInDemoMode(data: any) {
+        try {
+            fs.writeFileSync('files/in/' + data.fileId + '.json', JSON.stringify(data.content));
+            if (this.demoMode) {
+                //@ts-ignore
+                const file = new File({ fileId: data.fileId, filePath: '', dir: 'files/in/' });
+                // @ts-ignore
+                const server = new DemoMoveFileService(file);
+                server.moveAction();
+            }
+        } catch (e) {
+            logger.error(
+                'DEMO-режим - файл ' + data.fileId + ' не был сохранен с ошибкой' + e.message
+            );
         }
     }
 }

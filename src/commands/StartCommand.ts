@@ -27,7 +27,7 @@ class StartCommand extends AbstractCommand {
                 /^[1-6][0]$/i,
                 '30'
             )
-            .option('--demo [demo]', 'demo режим');
+            .option('--demo <demo>', 'demo режим', false);
     }
 
     /**

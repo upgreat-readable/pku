@@ -5,8 +5,8 @@ import { File } from '../files/File';
 import CliException from '../exceptions/CliException';
 import IPCClient from '../connections/IPCClient';
 import { IPCServer } from '../connections/IPCServer';
+import { blobSelections } from '../DemoSelectionExamples';
 
-const socketPath = '/tmp/ipc.sock';
 export class DemoMoveFileService {
     protected file: File;
 
@@ -16,22 +16,12 @@ export class DemoMoveFileService {
 
     public moveAction() {
         let fileContent = this.file.getJson();
+        // @ts-ignore
+        const selectionExample: any = blobSelections[fileContent.meta.subject];
         fileContent.selections = [];
-        fileContent.selections.push({
-            id: 592,
-            startSelection: 10,
-            endSelection: 20,
-            type: 'ЛМНЕНИЕ',
-            comment: '',
-            explanation:
-                'Личное мнение. Автор не приводит свое мнение, а дает рекомендации , что делать .',
-            correction: '',
-            tag: '',
-            group: 'meaning',
-            subtype: '',
-        });
+        fileContent.selections.push(selectionExample);
 
-        fs.writeFileSync('files/out/' + this.file.id, JSON.stringify(fileContent));
+        fs.writeFileSync('files/out/' + this.file.id + '.json', JSON.stringify(fileContent));
 
         const client = new IPCClient();
         client.sendMessage(IPCServer.sendFileEvent, {
@@ -41,6 +31,6 @@ export class DemoMoveFileService {
     }
 
     getFileContentOut() {
-        return fs.readFileSync('files/out/' + this.file.id, 'utf8');
+        return fs.readFileSync('files/out/' + this.file.id + '.json', 'utf8');
     }
 }

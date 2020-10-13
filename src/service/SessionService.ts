@@ -7,14 +7,18 @@ class SessionService {
     active: Boolean = false;
     receivedFiles: Array<number> = [];
     processedFiles: Array<number> = [];
-    options: StartOptions | undefined;
+    options: StartCommandOptions | undefined;
 
     constructor() {
         this.client = new SocketIoClient();
     }
 
-    start(options: StartOptions) {
+    start(options: StartCommandOptions) {
         this.options = options;
+        if (this.options.demo) {
+            this.client.demoMode = true;
+            logger.info('Ваша сессия стартовала в DEMO-режиме');
+        }
         this.active = true;
         this.client.connect();
         this.subscribe();
