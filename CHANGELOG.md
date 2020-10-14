@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.9](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.0.9) (2020-10-14)
+
+### Bug Fixes
+
+-   **count:** поправил регулярку и валидцию counta ([6af9edd](https://github.com/upgreat-readable/pku/commit/6af9edd7b2350fd1718fbf5d170c0070f51e9442))
+-   **sync versions:** sync ci versions ([46f3a6f](https://github.com/upgreat-readable/pku/commit/46f3a6f1e32a0a41238e880db4b5f1da156a4b84))
+
 ### [1.0.8](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.0.8) (2020-10-14)
 
 ### Bug Fixes
