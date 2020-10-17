@@ -30,6 +30,10 @@ export class SocketIoClient {
         this.handleRemoteEvents();
     }
 
+    public isConnect() {
+        return this.socket.connected;
+    }
+
     public disconnect() {
         this.socket.disconnect();
     }
@@ -73,13 +77,7 @@ export class SocketIoClient {
             .on('reconnecting', () => {
                 logger.debug('reconnecting');
             })
-            .on('connection-auth-error', (data: any) => {
-                logger.error(
-                    'connection-auth-error - Произошла ошибка авторизации по токену' +
-                        JSON.stringify(data)
-                );
-                // @todo remove active|id
-            })
+
             .on('session-file-available', (data: any) => {
                 logger.info(`Стал доступен файл ${data.fileId} в сессии @todo`);
 
@@ -99,12 +97,6 @@ export class SocketIoClient {
             })
             .on('session-client-abort-error', (data: any) => {
                 logger.error('session-client-abort-error' + JSON.stringify(data));
-                // @todo remove active|id
-            })
-
-            // START
-            .on('session-start-error', (data: any): never | any => {
-                logger.error('При старте сессии произошла ошибка ' + JSON.stringify(data));
                 // @todo remove active|id
             })
 
