@@ -31,6 +31,7 @@ export class GetNextFileService {
         return fs
             .readdirSync(dir)
             .filter(file => fs.lstatSync(path.join(dir, file)).isFile())
+            .filter(file => !/(^|\/)\.[^\/\.]/g.test(file))
             .map(file => ({ file, mtime: fs.lstatSync(path.join(dir, file)).mtime }))
             .sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
     };

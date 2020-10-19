@@ -6,7 +6,10 @@
         "year": "2017",
         "subject": "eng",
         "test": "егэ тренировка",
-        "expert": "exp001"
+        "expert": "exp001",
+        "uuid": "549206ec-73a3-4de1-9991-b94c347cc1f8",
+        "id": "800002",
+        "category": ""
     },
     "criteria": {
         "K1": 0,
