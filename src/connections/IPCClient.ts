@@ -10,6 +10,25 @@ import { IPCClientLogger } from '../logger';
  */
 class IPCClient {
     /**
+     * Установим silent на логи
+     */
+    public setConfigSilent() {
+        if (!isDebug) {
+            RootIPC.config.silent = true;
+        }
+    }
+
+    public sendToLogMessage(message: string) {
+        RootIPC.config.logger = function (message) {
+            IPCClientLogger.info(message);
+        };
+    }
+
+    public connect(callback: any) {
+        RootIPC.connectTo(IPCServerName, socketPath, callback);
+    }
+
+    /**
      * Отправка сообщения серверу
      * @param event
      * @param message объект который необходимо отправить
@@ -17,14 +36,8 @@ class IPCClient {
      */
     public sendMessage(event: string, message: any = {}, waitResponse: boolean = false) {
         this.checkSocket();
-
-        if (!isDebug) {
-            RootIPC.config.silent = true;
-        }
-
-        RootIPC.config.logger = function (message) {
-            IPCClientLogger.info(message);
-        };
+        this.setConfigSilent();
+        this.sendToLogMessage(message);
 
         const sendData = () => {
             this.getSelector().emit(event, message);
@@ -52,8 +65,43 @@ class IPCClient {
     }
 
     /** Отключение клиента от демона */
-    protected disconnect() {
+    public disconnect() {
         RootIPC.disconnect(IPCServerName);
+    }
+
+    /**
+     * Обёртка над .emit ipc-client, для конфигурации и управления из cli-команд
+     * @param event
+     * @param message
+     * @protected
+     */
+    public emit(event: string, message: any) {
+        this.checkSocket();
+
+        this.getSelector().emit(event, message);
+        return this;
+    }
+
+    /**
+     * Обёртка над .on ipc-client, для конфигурации и управления из cli-команд
+     * @param event
+     * @param callback
+     * @protected
+     */
+    public on(event: string, callback: any) {
+        this.checkSocket();
+
+        this.getSelector().on(event, callback);
+        return this;
+    }
+
+    /**
+     * Синхронный метод ожидания программы
+     * @param ms
+     * @protected
+     */
+    public sleep(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
 

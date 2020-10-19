@@ -1,6 +1,6 @@
 import RootIPC from 'node-ipc';
 import logger, { IPCServerLogger } from '../logger';
-import { socketPath } from '../config';
+import { IPCServerName, socketPath } from '../config';
 import fs from 'fs';
 import SessionService from '../service/SessionService';
 
@@ -14,6 +14,7 @@ export class IPCServer {
     static readonly sendFileEvent = 'ipc.send-file';
     static readonly sessionReconnectEvent = 'ipc.session-reconnect';
     session: SessionService;
+    lastSocket: any;
 
     /**
      * Создает RootIPC сервер, который будет слушать события
@@ -22,11 +23,15 @@ export class IPCServer {
     constructor() {
         this.checkSocket();
         this.configureIPCServer();
-        this.session = new SessionService();
+        this.session = new SessionService(this);
 
         RootIPC.serve(socketPath);
         this.handleEvents();
-        RootIPC.server.start();
+        this.getCurrent().start();
+    }
+
+    public getCurrent() {
+        return RootIPC.server;
     }
 
     // noinspection JSMethodCanBeStatic
@@ -56,14 +61,15 @@ export class IPCServer {
             sessionReconnectEvent,
         } = IPCServer;
 
-        RootIPC.server
+        this.getCurrent()
             .on(sendFileEvent, data => this.onSendFile(data))
-            .on(sessionStartEvent, data => this.onSessionStart(data))
-            .on(sessionStopEvent, () => this.onSessionStop())
+            .on(sessionStartEvent, (data, socket) => this.onSessionStart(data, socket))
+            .on(sessionStopEvent, (data, socket) => this.onSessionStop(data, socket))
             .on(sessionReconnectEvent, () => this.onSessionReconnect());
     }
 
-    public onSessionStart(options: StartOptions) {
+    public onSessionStart(options: StartOptions, socket: any) {
+        this.lastSocket = socket;
         logger.debug('IPC server handle: ' + IPCServer.sessionStartEvent);
         this.session.start(options);
     }
@@ -73,7 +79,8 @@ export class IPCServer {
         this.session.send(data);
     }
 
-    public onSessionStop() {
+    public onSessionStop(data: any, socket: any) {
+        this.lastSocket = socket;
         logger.debug('IPC server handle: ' + IPCServer.sessionStopEvent);
         this.session.stop();
     }
@@ -82,5 +89,9 @@ export class IPCServer {
         console.log('onSessionReconnect');
         logger.debug('IPC server handle: ' + IPCServer.sessionReconnectEvent);
         this.session.reconnect();
+    }
+
+    public sendToClient(event: string, data: any) {
+        this.getCurrent().emit(this.lastSocket, event, data);
     }
 }
