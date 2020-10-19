@@ -47,28 +47,11 @@ class StartCommand extends AbstractCommand {
         client.setConfigSilent();
         client.sendToLogMessage(IPCServer.sessionStartEvent);
 
-        const startAction = () => {
-            client.emit(IPCServer.sessionStartEvent, options);
-            //
-            // client.on('redundant-connect', () => {
-            //     this.reconnectStatus = true;
-            // });
-            // client.sleep(this.commandDelay).then(() => {
-            //     if (this.reconnectStatus) {
-            //         console.log('Невозможно создать вторую сессию.');
-            //         client.disconnect();
-            //         process.exit(1);
-            //     }
-            // });
-            this.startingHandler(client);
-        };
-        client.actionOnConnectToServer(() => {
-            client.on('connect', startAction);
+        client.connect(() => {
+            client.on('connect', () => {
+                this.startingHandler(client, options);
+            });
         });
-        // RootIPC.connectTo(IPCServerName, socketPath, () => {
-        //     client.on('connect', startAction);
-        // });
-        // client.actionOnConnectToServer();
     };
 
     protected validateOptions(options: StartCommandOptions) {
@@ -81,21 +64,14 @@ class StartCommand extends AbstractCommand {
     }
 
     /**
-     * Обработчик для команды, в случае реконнекта
-     * @param client
-     * @protected
-     */
-    protected redundantHandler(client: IPCClient) {}
-
-    /**
      * Обработчик для старта команды
      * @param client
+     * @param options
      * @protected
      */
-    protected startingHandler(client: IPCClient) {
+    protected startingHandler = (client: IPCClient, options: StartCommandOptions) => {
+        client.emit(IPCServer.sessionStartEvent, options);
         client.on('start-feedback-to-command', (data: any) => {
-            console.log(data);
-            // console.log('sobitie');
             this.commandStatus = data;
         });
         client.sleep(this.commandDelay).then(() => {
@@ -109,7 +85,7 @@ class StartCommand extends AbstractCommand {
             }
             client.disconnect();
         });
-    }
+    };
 }
 
 export default StartCommand;

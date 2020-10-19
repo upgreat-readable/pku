@@ -14,6 +14,7 @@ export class IPCServer {
     static readonly sendFileEvent = 'ipc.send-file';
     static readonly sessionReconnectEvent = 'ipc.session-reconnect';
     session: SessionService;
+    lastSocket: any;
 
     /**
      * Создает RootIPC сервер, который будет слушать события
@@ -52,15 +53,6 @@ export class IPCServer {
         }
     }
 
-    public remoteSingleReaction(eventToEmit: string, params: any) {
-        RootIPC.connectTo(IPCServerName, socketPath, () => {
-            RootIPC.of[IPCServerName].on('connect', () => {
-                RootIPC.of[IPCServerName].emit(eventToEmit, params);
-                RootIPC.disconnect(IPCServerName);
-            });
-        });
-    }
-
     private handleEvents() {
         const {
             sendFileEvent,
@@ -77,12 +69,9 @@ export class IPCServer {
     }
 
     public onSessionStart(options: StartOptions, socket: any) {
+        this.lastSocket = socket;
         logger.debug('IPC server handle: ' + IPCServer.sessionStartEvent);
         this.session.start(options);
-
-        this.getCurrent().on('start-feedback-from-io', data => {
-            this.getCurrent().emit(socket, 'start-feedback-to-command', data);
-        });
     }
 
     public onSendFile(data: any) {
@@ -91,17 +80,18 @@ export class IPCServer {
     }
 
     public onSessionStop(data: any, socket: any) {
+        this.lastSocket = socket;
         logger.debug('IPC server handle: ' + IPCServer.sessionStopEvent);
         this.session.stop();
-
-        this.getCurrent().on('start-feedback-from-io', data => {
-            this.getCurrent().emit(socket, 'start-feedback-to-command', data);
-        });
     }
 
     public onSessionReconnect() {
         console.log('onSessionReconnect');
         logger.debug('IPC server handle: ' + IPCServer.sessionReconnectEvent);
         this.session.reconnect();
+    }
+
+    public sendToClient(event: string, data: any) {
+        this.getCurrent().emit(this.lastSocket, event, data);
     }
 }

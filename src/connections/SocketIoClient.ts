@@ -90,16 +90,6 @@ export class SocketIoClient {
                 }
             })
 
-            // ABORT
-            .on('session-client-abort-success', (data: any) => {
-                logger.info('session-client-abort-success' + JSON.stringify(data));
-                // @todo remove active|id
-            })
-            .on('session-client-abort-error', (data: any) => {
-                logger.error('session-client-abort-error' + JSON.stringify(data));
-                // @todo remove active|id
-            })
-
             // RECONNECT
             .on('session-reconnect-error', (data: any): never | any => {
                 logger.info('Не удалось переподключится к сессии ' + JSON.stringify(data));

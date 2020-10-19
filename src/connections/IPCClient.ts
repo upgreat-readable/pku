@@ -24,7 +24,7 @@ class IPCClient {
         };
     }
 
-    public actionOnConnectToServer(callback: any) {
+    public connect(callback: any) {
         RootIPC.connectTo(IPCServerName, socketPath, callback);
     }
 
@@ -44,9 +44,6 @@ class IPCClient {
             this.disconnect();
         };
 
-        // this.actionOnConnectToServer(() => {
-        //
-        // })
         RootIPC.connectTo(IPCServerName, socketPath, () => {
             this.getSelector().on('connect', sendData);
         });
