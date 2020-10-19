@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.2.0) (2020-10-19)
+
+### Features
+
+-   **фидбек комманд:** фидбек команд - в работе ([d08d283](https://github.com/upgreat-readable/pku/commit/d08d2834bdfa540196a7e8d804decf3902b42cb1))
+-   **фидбек от комманд:** команды теперь возвращают фидбек по выполнению ([9aea9a1](https://github.com/upgreat-readable/pku/commit/9aea9a1c9d58f140bae9cf491955dfb5b0d9a0fe))
+
+### Bug Fixes
+
+-   **count:** поправил регулярку и валидцию counta ([6af9edd](https://github.com/upgreat-readable/pku/commit/6af9edd7b2350fd1718fbf5d170c0070f51e9442))
+-   **sync versions:** sync ci versions ([46f3a6f](https://github.com/upgreat-readable/pku/commit/46f3a6f1e32a0a41238e880db4b5f1da156a4b84))
+
 ## [1.1.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.1.0) (2020-10-19)
 
 ### Features
