@@ -11,7 +11,8 @@
         "pretty": "prettier --write .",
         "commit": "git-cz",
         "lint:code": "eslint \"./**/*.{ts,tsx}\"",
-        "release": "standard-version && ./.fix_env_release"
+        "release": "standard-version",
+        "release-fix": "./.fix_env_release"
     },
     "repository": {
         "type": "git",
