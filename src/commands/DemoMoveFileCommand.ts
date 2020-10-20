@@ -3,6 +3,7 @@ import { Command } from 'commander';
 import AbstractCommand from './interface/AbstractCommand';
 import { DemoMoveFileService } from '../service/DemoMoveFileService';
 import { File } from '../files/File';
+import { CommandLogger } from '../logger';
 
 /**
  * Команда перемещения файла
@@ -29,7 +30,7 @@ class DemoMoveFileCommand extends AbstractCommand {
             const server = new DemoMoveFileService(file);
             server.moveAction();
         } catch (e) {
-            console.log(`Во время отправки произошла ошибка. \n${e.message}`);
+            CommandLogger.error(`Во время отправки произошла ошибка. \n${e.message}`);
         }
     };
 }

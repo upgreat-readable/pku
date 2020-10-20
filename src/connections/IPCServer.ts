@@ -87,7 +87,6 @@ export class IPCServer {
     }
 
     public onSessionReconnect() {
-        console.log('onSessionReconnect');
         logger.debug('IPC server handle: ' + IPCServer.sessionReconnectEvent);
         this.session.reconnect();
     }
@@ -96,11 +95,7 @@ export class IPCServer {
     public sendToClient(event: string, messageData: MessageData) {
         // рендерим сообщение в консоль сервера
 
-        console.log(messageData);
-
         Message.fromDictionary(messageData).show();
-
-        console.log(messageData);
 
         this.getCurrent().emit(this.lastSocket, event, messageData);
     }

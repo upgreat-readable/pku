@@ -4,7 +4,7 @@ import CriteriaService from '../service/CriteriaService';
 import CliException from '../exceptions/CliException';
 import fs from 'fs';
 import { FileCollection } from '../files/FileCollection';
-import logger from '../logger';
+import { CommandLogger } from '../logger';
 
 /**
  * Команда критериев
@@ -52,7 +52,7 @@ class CriteriaCommand extends AbstractCommand {
 
             if (!saveString) {
                 saveString = 'files/custom/temp.json';
-                console.log(
+                CommandLogger.error(
                     'Не удалось отрезолвить путь к файлу. Результат последнего расчёта будет сохранен в files/custom/temp.json'
                 );
             }
@@ -64,12 +64,12 @@ class CriteriaCommand extends AbstractCommand {
                 fileJsonContent.criteria = JSON.parse(service.getResult());
                 fs.writeFileSync(saveString, JSON.stringify(fileJsonContent));
 
-                console.log('Результат записан в ' + saveString);
+                CommandLogger.info('Результат записан в ' + saveString);
             } else {
                 console.log(service.getResult());
             }
         } catch (e) {
-            logger.error('Во время расчёта критериев произошла ошибка.' + '\n' + e.message);
+            CommandLogger.error('Во время расчёта критериев произошла ошибка.' + '\n' + e.message);
             process.exit(1);
         }
     };

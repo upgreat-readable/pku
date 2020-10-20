@@ -3,6 +3,7 @@ import AbstractCommand from './interface/AbstractCommand';
 import { PsrService } from '../service/PsrService';
 import { FileCollection } from '../files/FileCollection';
 import CliException from '../exceptions/CliException';
+import { CommandLogger } from '../logger';
 
 // noinspection HtmlDeprecatedTag
 /**
@@ -39,7 +40,7 @@ class PSRCommand extends AbstractCommand {
             let server = new PsrService(fileCollection);
             console.log(server.getResult());
         } catch (e) {
-            console.log(
+            CommandLogger.error(
                 'Во время расчёта метрик с помощью ПСР произошла ошибка.' + '\n' + e.message
             );
             process.exit(1);

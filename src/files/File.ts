@@ -37,7 +37,7 @@ export class File {
                     fs.readFileSync(this.path.toString(), 'utf8')
                 );
         } catch (e) {
-            console.log(e.message);
+            logger.error(e.message);
         }
     }
 
