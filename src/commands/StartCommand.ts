@@ -2,7 +2,9 @@ import AbstractCommand from './interface/AbstractCommand';
 import IPCClient from '../connections/IPCClient';
 import { IPCServer } from '../connections/IPCServer';
 import { Command } from 'commander';
-import logger from '../logger';
+import { CommandLogger } from '../logger';
+import MessageData from '../types/Message';
+import Message from '../messages';
 
 class StartCommand extends AbstractCommand {
     name: string = 'start';
@@ -12,12 +14,12 @@ class StartCommand extends AbstractCommand {
         command
             .requiredOption(
                 '--mode <mode>',
-                'режим сессии (algorithmic|technical|small)',
-                /^(algorithmic|technical|small)$/i,
+                'режим сессии (algorithmic|technical|final)',
+                /^(algorithmic|technical|final)$/i,
                 'algorithmic'
             )
             .option('--type <type>', 'тип датасета (train|test)', /^(train|test)$/i, 'train')
-            .option('--count <count>', 'количество файлов (100-1000)', /^\d+$/i, '1000')
+            .option('--count <count>', 'количество файлов (30-1000)', /^\d+$/i, '1000')
             .option('--lang <lang>', 'язык датасета(rus|eng|all)', /^(rus|eng|all)$/i, 'rus')
             .option(
                 '--time <time>',
@@ -34,8 +36,9 @@ class StartCommand extends AbstractCommand {
             const client = new IPCClient();
             client.log(IPCServer.sessionStartEvent);
             client.connect().then((connection: any) => {
-                connection.on('start-feedback-to-command', () => {
-                    logger.info('The session has started successfully.');
+                connection.on('message.start', (messageData: MessageData) => {
+                    Message.fromDictionary(messageData).setLogger(CommandLogger).show();
+
                     resolve();
                     client.disconnect();
                 });

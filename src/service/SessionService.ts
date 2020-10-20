@@ -1,8 +1,7 @@
 import { SocketIoClient } from '../connections/SocketIoClient';
 import { IPCServer } from '../connections/IPCServer';
 import logger from '../logger';
-import RootIPC from 'node-ipc';
-import { IPCServerName, socketPath } from '../config';
+import Message from '../messages';
 
 class SessionService {
     IPCServer: IPCServer;
@@ -22,7 +21,7 @@ class SessionService {
         this.options = options;
         if (this.options.demo) {
             this.client.demoMode = true;
-            logger.info('Ваша сессия стартовала в DEMO-режиме');
+            logger.info('Сессия стартовала в DEMO-режиме');
         }
         this.client.connect();
 
@@ -45,6 +44,10 @@ class SessionService {
 
     stop() {
         if (!this.isActive()) {
+            this.IPCServer.sendToClient('message.stop', {
+                message: 'message.stop.error',
+                type: 'error',
+            });
             return;
         }
 
@@ -76,40 +79,65 @@ class SessionService {
 
     subscribe() {
         this.client.socket
-            .on('session-start-success', ({ sessionId }: any): never | any => {
-                logger.info('Сессия успешно подключилась ' + sessionId);
-                this.id = sessionId;
-                this.IPCServer.sendToClient('start-feedback-to-command', true);
-            })
-            .on('session-reconnect-success', ({ sessionId }: any): never | any => {
-                logger.info('Сессия успешно переподключилась ' + sessionId);
-                this.id = sessionId;
-            })
 
             // START
-            .on('session-start-error', (data: any): never | any => {
-                logger.error('При старте сессии произошла ошибка ' + JSON.stringify(data));
-                this.IPCServer.sendToClient('start-feedback-to-command', JSON.stringify(data));
+            .on('session-start-success', ({ sessionId }: any) => {
+                this.id = sessionId;
+                this.IPCServer.sendToClient('message.start', {
+                    message: 'message.start.success',
+                    source: sessionId,
+                });
+            })
+            .on('session-start-error', (data: any) => {
+                this.IPCServer.sendToClient('message.start', {
+                    message: 'message.start.error',
+                    source: data,
+                    type: 'error',
+                });
+            })
+            .on('connection-auth-error', (data: any) => {
+                this.IPCServer.sendToClient('message.start', {
+                    message: 'message.start.auth',
+                    source: data,
+                    type: 'error',
+                });
+                this.IPCServer.sendToClient('message.reconnect', {
+                    message: 'message.reconnect.auth',
+                    source: data,
+                    type: 'error',
+                });
             })
 
-            .on('connection-auth-error', (data: any) => {
-                logger.error(
-                    'connection-auth-error - Произошла ошибка авторизации по токену' +
-                        JSON.stringify(data)
-                );
-                this.IPCServer.sendToClient('start-feedback-to-command', JSON.stringify(data));
-                // @todo remove active|id
+            // RECONNECT
+            .on('session-reconnect-success', ({ sessionId }: any) => {
+                this.IPCServer.sendToClient('message.reconnect', {
+                    message: 'message.reconnect.success',
+                    source: sessionId,
+                });
+                this.id = sessionId;
+            })
+            .on('session-reconnect-error', (data: any) => {
+                this.IPCServer.sendToClient('message.reconnect', {
+                    message: 'message.reconnect.error',
+                    source: data,
+                    type: 'error',
+                });
             })
 
             // STOP
             .on('session-client-abort-success', (data: any) => {
-                logger.info('session-client-abort-success' + JSON.stringify(data));
-                this.IPCServer.sendToClient('stop-feedback-to-command', JSON.stringify(data));
+                this.IPCServer.sendToClient('message.stop', {
+                    message: 'message.stop.success',
+                    source: data,
+                });
                 this.client.disconnect();
             })
             .on('session-client-abort-error', (data: any) => {
-                logger.error('session-client-abort-error' + JSON.stringify(data));
-                this.IPCServer.sendToClient('stop-feedback-to-command', JSON.stringify(data));
+                this.IPCServer.sendToClient('message.stop', {
+                    message: 'message.stop.error',
+                    source: data,
+                    type: 'error',
+                });
                 this.client.disconnect();
             });
     }

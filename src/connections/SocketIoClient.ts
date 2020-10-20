@@ -3,6 +3,7 @@ import logger from '../logger';
 import fs from 'fs';
 import { File } from '../files/File';
 import { DemoMoveFileService } from '../service/DemoMoveFileService';
+import { link, userToken } from '../config';
 
 export class SocketIoClient {
     isConnected: boolean = false;
@@ -12,8 +13,6 @@ export class SocketIoClient {
     socket: SocketIOClient.Socket;
 
     public connect() {
-        let { link, userToken } = this.getEnvVariable();
-
         if (!userToken) {
             // @todo заменить на более безобидный вариант или отловить
             throw new Error('из env не был получен токен юзера');
@@ -42,16 +41,6 @@ export class SocketIoClient {
         this.socket.emit(eventName, data);
     }
 
-    private getEnvVariable = () => {
-        let debugLink = process.env.DEBUG_ADDRESS;
-        let link = debugLink ? debugLink : 'https://ds.readable.upgreat.one/pku';
-        let userToken = process.env.USER_TOKEN;
-        return {
-            link,
-            userToken,
-        };
-    };
-
     /**
      * Обработка событий инициированных удаленным сервером
      */
@@ -77,9 +66,8 @@ export class SocketIoClient {
             .on('reconnecting', () => {
                 logger.debug('reconnecting');
             })
-
             .on('session-file-available', (data: any) => {
-                logger.info(`Стал доступен файл ${data.fileId} в сессии @todo`);
+                logger.info(`Стал доступен файл ${data.fileId} в сессии`);
 
                 /** Если ПКУ был запущен с флагом demo true - при сохрании файл доразмечается,
                  * отправляется в папку out и отправляется на сервер. */
@@ -88,12 +76,6 @@ export class SocketIoClient {
                 } else {
                     this.saveFile(data);
                 }
-            })
-
-            // RECONNECT
-            .on('session-reconnect-error', (data: any): never | any => {
-                logger.info('Не удалось переподключится к сессии ' + JSON.stringify(data));
-                // @todo remove active|id
             });
     }
 

@@ -2,6 +2,9 @@ import AbstractCommand from './interface/AbstractCommand';
 import { Command } from 'commander';
 import { IPCServer } from '../connections/IPCServer';
 import IPCClient from '../connections/IPCClient';
+import MessageData from '../types/Message';
+import Message from '../messages';
+import { CommandLogger } from '../logger';
 
 /**
  * Команда переподключения
@@ -13,9 +16,19 @@ class ReconnectCommand extends AbstractCommand {
     /**
      * Обработка команды
      */
-    protected action = () => {
-        const client = new IPCClient();
-        client.sendMessage(IPCServer.sessionReconnectEvent);
+    protected action = async () => {
+        await new Promise(resolve => {
+            const client = new IPCClient();
+            client.connect().then((connection: any) => {
+                connection.on('message.stop', (messageData: MessageData) => {
+                    Message.fromDictionary(messageData).setLogger(CommandLogger).show();
+
+                    resolve();
+                    client.disconnect();
+                });
+            });
+            client.sendMessage(IPCServer.sessionReconnectEvent);
+        });
     };
 }
 

@@ -29,9 +29,11 @@ class SendFileCommand extends AbstractCommand {
         this.validateOptions(options);
 
         const client = new IPCClient();
-        client.sendMessage(IPCServer.sendFileEvent, {
-            fileId: options.fileId, // @ts-ignore
-            content: this.getFileContent(options.fileId),
+        client.connect().then(() => {
+            client.sendMessage(IPCServer.sendFileEvent, {
+                fileId: options.fileId, // @ts-ignore
+                content: this.getFileContent(options.fileId),
+            });
         });
     };
 

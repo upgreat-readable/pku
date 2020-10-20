@@ -3,13 +3,15 @@ import logger, { IPCServerLogger } from '../logger';
 import { IPCServerName, socketPath } from '../config';
 import fs from 'fs';
 import SessionService from '../service/SessionService';
+import MessageData from '../types/Message';
+import Message from '../messages';
 
 /**
  * Класс IPC сервера
  * отвечает за работу демонизированного процесса
  */
 export class IPCServer {
-    static readonly sessionStartEvent = 'ipc.session-start';
+    static readonly sessionStartEvent = 'message.start';
     static readonly sessionStopEvent = 'ipc.session-stop';
     static readonly sendFileEvent = 'ipc.send-file';
     static readonly sessionReconnectEvent = 'ipc.session-reconnect';
@@ -36,7 +38,6 @@ export class IPCServer {
 
     // noinspection JSMethodCanBeStatic
     private configureIPCServer() {
-        // RootIPC.config.silent = true;
         RootIPC.config.logger = function (message) {
             IPCServerLogger.info(message);
         };
@@ -91,7 +92,16 @@ export class IPCServer {
         this.session.reconnect();
     }
 
-    public sendToClient(event: string, data: any) {
-        this.getCurrent().emit(this.lastSocket, event, data);
+    /** Отправка сообщения подключившемуся клиенту */
+    public sendToClient(event: string, messageData: MessageData) {
+        // рендерим сообщение в консоль сервера
+
+        console.log(messageData);
+
+        Message.fromDictionary(messageData).show();
+
+        console.log(messageData);
+
+        this.getCurrent().emit(this.lastSocket, event, messageData);
     }
 }

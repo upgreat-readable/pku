@@ -1,7 +1,9 @@
 import AbstractCommand from './interface/AbstractCommand';
 import IPCClient from '../connections/IPCClient';
 import { IPCServer } from '../connections/IPCServer';
-import logger from '../logger';
+import Message from '../messages';
+import { CommandLogger } from '../logger';
+import MessageData from '../types/Message';
 
 /**
  * Команда остановки сессии
@@ -13,15 +15,12 @@ class StopCommand extends AbstractCommand {
 
     /** Обработка команды */
     protected action = async () => {
-        const client = new IPCClient();
-        client.log(IPCServer.sessionStopEvent);
-
         await new Promise(resolve => {
             const client = new IPCClient();
-            client.log(IPCServer.sessionStopEvent);
             client.connect().then((connection: any) => {
-                connection.on('start-feedback-to-command', () => {
-                    logger.info('The session was successfully terminated.');
+                connection.on('message.stop', (messageData: MessageData) => {
+                    Message.fromDictionary(messageData).setLogger(CommandLogger).show();
+
                     resolve();
                     client.disconnect();
                 });

@@ -24,9 +24,11 @@ export class DemoMoveFileService {
         fs.writeFileSync('files/out/' + this.file.id + '.json', JSON.stringify(fileContent));
 
         const client = new IPCClient();
-        client.sendMessage(IPCServer.sendFileEvent, {
-            fileId: this.file.id,
-            content: this.getFileContentOut(),
+        client.connect().then(() => {
+            client.sendMessage(IPCServer.sendFileEvent, {
+                fileId: this.file.id,
+                content: this.getFileContentOut(),
+            });
         });
     }
 
