@@ -9,23 +9,25 @@ import { IPCClientLogger } from '../logger';
  * к демонизированному процессу клиента Socket.IO соединения
  */
 class IPCClient {
-    /**
-     * Установим silent на логи
-     */
-    public setConfigSilent() {
+    protected initialized = false;
+
+    constructor() {
         if (!isDebug) {
             RootIPC.config.silent = true;
         }
-    }
 
-    public sendToLogMessage(message: string) {
         RootIPC.config.logger = function (message) {
             IPCClientLogger.info(message);
         };
     }
 
-    public connect(callback: any) {
-        RootIPC.connectTo(IPCServerName, socketPath, callback);
+    public connect() {
+        return new Promise(resolve => {
+            this.initialized = true;
+            RootIPC.connectTo(IPCServerName, socketPath, () => {
+                resolve(this.getSelector());
+            });
+        });
     }
 
     /**
@@ -35,38 +37,36 @@ class IPCClient {
      * @param waitResponse необходимо дождаться ответа
      */
     public sendMessage(event: string, message: any = {}, waitResponse: boolean = false) {
-        this.checkSocket();
-        this.setConfigSilent();
-        this.sendToLogMessage(message);
+        this.checkConnect();
+        this.log(event);
+        this.emit(event, message);
+    }
 
-        const sendData = () => {
-            this.getSelector().emit(event, message);
-            this.disconnect();
-        };
-
-        RootIPC.connectTo(IPCServerName, socketPath, () => {
-            this.getSelector().on('connect', sendData);
-        });
+    public log(message: string) {
+        IPCClientLogger.info(message);
     }
 
     /** Метод проверки наличия сокета */
-    public checkSocket() {
+    protected checkConnect() {
         if (!fs.existsSync(socketPath)) {
-            throw new CliException('не найден сокет для подключения к демону');
+            throw new CliException('Не найден сокет для подключения к демону');
         }
-    }
 
-    /**
-     * Получение ссылки на сервер
-     * @protected
-     */
-    protected getSelector() {
-        return RootIPC.of[IPCServerName];
+        if (!this.initialized) {
+            throw new CliException(
+                'Невозможно отправить сообщение т.к. подключение не инициализировано'
+            );
+        }
     }
 
     /** Отключение клиента от демона */
     public disconnect() {
         RootIPC.disconnect(IPCServerName);
+    }
+
+    /** Получение ссылки на сервер */
+    protected getSelector() {
+        return RootIPC.of[IPCServerName];
     }
 
     /**
@@ -76,7 +76,7 @@ class IPCClient {
      * @protected
      */
     public emit(event: string, message: any) {
-        this.checkSocket();
+        this.checkConnect();
 
         this.getSelector().emit(event, message);
         return this;
@@ -89,7 +89,7 @@ class IPCClient {
      * @protected
      */
     public on(event: string, callback: any) {
-        this.checkSocket();
+        this.checkConnect();
 
         this.getSelector().on(event, callback);
         return this;
@@ -99,10 +99,17 @@ class IPCClient {
      * Синхронный метод ожидания программы
      * @param ms
      * @protected
+     * @deprecated
      */
     public sleep(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+
+    /**
+     * Установим silent на логи
+     * @deprecated
+     */
+    public setConfigSilent() {}
 }
 
 export default IPCClient;

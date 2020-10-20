@@ -4,6 +4,7 @@ import { PsrService } from '../service/PsrService';
 import { FileCollection } from '../files/FileCollection';
 import CliException from '../exceptions/CliException';
 
+// noinspection HtmlDeprecatedTag
 /**
  * Команда критериев
  * Возвращает json расчет критериев из пакета критериев

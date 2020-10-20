@@ -1,3 +1,6 @@
+/**
+ * @deprecated
+ */
 export const ConsoleGlossary = {
     'ipc.session-start-true': 'The session has started successfully.',
     'ipc.session-start-false': 'The session was not started.',

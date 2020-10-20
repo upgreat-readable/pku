@@ -1,6 +1,7 @@
+import { Command } from 'commander';
+
 import AbstractCommand from './interface/AbstractCommand';
 import { DemoMoveFileService } from '../service/DemoMoveFileService';
-import { Command } from 'commander';
 import { File } from '../files/File';
 
 /**
@@ -8,6 +9,7 @@ import { File } from '../files/File';
  */
 class DemoMoveFileCommand extends AbstractCommand {
     name: string = 'demoMoveFile';
+
     description: string =
         'Команда для теста обмена. Перемещает файл из in в out с добавлением разметки';
 
@@ -21,13 +23,13 @@ class DemoMoveFileCommand extends AbstractCommand {
     protected action = (options: FileOptions) => {
         const filePath = 'files/in/';
         try {
-            //@ts-ignore
-            let file = new File({ fileId: options.fileId, filePath: '', dir: filePath });
             // @ts-ignore
-            let server = new DemoMoveFileService(file);
+            const file = new File({ fileId: options.fileId, filePath: '', dir: filePath });
+            // @ts-ignore
+            const server = new DemoMoveFileService(file);
             server.moveAction();
         } catch (e) {
-            console.log('Во время отправки произошла ошибка.' + '\n' + e.message);
+            console.log(`Во время отправки произошла ошибка. \n${e.message}`);
         }
     };
 }
