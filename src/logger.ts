@@ -2,12 +2,18 @@ import winston, { format } from 'winston';
 import { logFormat } from './config';
 
 const printf = format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`);
-let consoleFormat = format.combine(format.json(), format.timestamp());
+let consoleFormat = format.combine(format.json(), format.timestamp(), format.uncolorize());
 let fileFormat = consoleFormat;
 
 if (logFormat === 'pretty') {
-    consoleFormat = format.combine(format.colorize(), format.simple(), format.timestamp(), printf);
-    fileFormat = format.combine(format.simple(), format.timestamp(), printf);
+    consoleFormat = format.combine(
+        format.timestamp(),
+        format.splat(),
+        format.colorize(),
+        format.simple(),
+        printf
+    );
+    fileFormat = format.combine(format.simple(), format.timestamp(), printf, format.uncolorize());
 }
 
 export const CommandLogger = winston.createLogger({

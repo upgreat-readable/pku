@@ -1,10 +1,10 @@
-import console from './console';
+import messagesConsole from './console';
 import CliException from '../exceptions/CliException';
 import MessageData from '../types/Message';
 import logger from '../logger';
 import { Logger } from 'winston';
 
-const dictionary = { ...console };
+const dictionary = { ...messagesConsole };
 
 /**
  * Класс для рендера сообщений
@@ -46,7 +46,7 @@ class Message implements MessageData {
         const loggerMethod = this.logger[this.type];
 
         if (this.source) {
-            loggerMethod(this.message, this.source);
+            loggerMethod(this.message + ' %s', this.source);
             return;
         }
 
