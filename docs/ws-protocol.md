@@ -6,6 +6,21 @@ EntryPoint: [https://ds.readable.upgreat.one/pku](https://ds.readable.upgreat.on
 
 ПКУ работает на socket.io реализации на nodejs.
 
+Пример запуска клиента на socket.io nodejs
+
+```js
+import io from 'socket.io-client';
+
+const socket = io.connect(link, {
+    secure: true,
+    rejectUnauthorized: false,
+    query: {
+        token: userToken,
+    },
+    transports: ['websocket'],
+});
+```
+
 # Сообщения WS сервера
 
 -   **`connection-auth-error`**: ошибка авторизации
@@ -20,6 +35,12 @@ EntryPoint: [https://ds.readable.upgreat.one/pku](https://ds.readable.upgreat.on
 -   **`session-client-abort-error`**: ошибка остановки сессии
 
 -   **`session-file-available`**: получение нового файла
+
+    payload
+
+    -   `sessionId`
+    -   `fileId`
+    -   `content`
 
 -   **`session-close`**
 
