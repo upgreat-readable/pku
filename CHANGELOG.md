@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.3.1) (2020-10-21)
+
+### Bug Fixes
+
+-   **logs:** убраны логи ipc.client в консоли ([c931547](https://github.com/upgreat-readable/pku/commit/c93154759da6792f591088cbb1bb0dad9ebbc7e8))
+
 ## [1.3.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.3.0) (2020-10-20)
 
 ### Features
