@@ -22,7 +22,9 @@ class Message implements MessageData {
     constructor(params: MessageData) {
         this.message = params.message;
         this.source = params.source;
-        this.type = params.type;
+        if (params.type) {
+            this.type = params.type;
+        }
     }
 
     static fromDictionary(params: MessageData) {

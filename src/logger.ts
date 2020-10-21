@@ -29,7 +29,6 @@ export const IPCServerLogger = winston.createLogger({
 export const IPCClientLogger = winston.createLogger({
     level: 'debug',
     transports: [
-        new winston.transports.Console({ format: consoleFormat }),
         new winston.transports.File({ filename: 'logs/ipc-client.log', format: fileFormat }),
     ],
 });
