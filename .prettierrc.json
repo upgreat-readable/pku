@@ -5,5 +5,5 @@
     "editor.formatOnSave": true,
     "arrowParens": "avoid",
     "endOfLine": "lf",
-    "printWidth": 100
+    "printWidth": 150
 }

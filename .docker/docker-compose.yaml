@@ -14,6 +14,7 @@ services:
         environment:
             - UID
             - USER_TOKEN
+            - DEBUG
             - DEBUG_FLAG
             - DEBUG_ADDRESS
             - DISLOCATION

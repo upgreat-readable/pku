@@ -1,23 +1,30 @@
 import io from 'socket.io-client';
 import logger from '../logger';
-import fs from 'fs';
-import { File } from '../files/File';
-import { DemoMoveFileService } from '../service/DemoMoveFileService';
 import { link, userToken } from '../config';
+import IPCServer from './IPCServer';
 
 export class SocketIoClient {
-    isConnected: boolean = false;
-    demoMode: boolean = false;
-
     // @ts-ignore
     socket: SocketIOClient.Socket;
 
-    public connect() {
+    public connect(callback: Function = () => {}) {
         if (!userToken) {
             // @todo заменить на более безобидный вариант или отловить
             throw new Error('из env не был получен токен юзера');
         }
 
+        // если подключен - пропускаем
+        if (this.socket && this.socket.connected) {
+            return;
+        }
+
+        // если сокет есть, но отключен - подключаемся
+        if (this.socket) {
+            this.socket.connect();
+            return;
+        }
+
+        // создаем новый
         this.socket = io.connect(link, {
             secure: true,
             rejectUnauthorized: false,
@@ -25,8 +32,15 @@ export class SocketIoClient {
                 token: userToken,
             },
             transports: ['websocket'],
+            reconnection: true,
+            reconnectionAttempts: 3,
+            reconnectionDelay: 1000, // how long to initially wait before attempting a new reconnection
+            reconnectionDelayMax: 3000, // maximum amount of time to wait between reconnection attempts. Each attempt increases the reconnection delay by 2x along with a randomization factor
+            randomizationFactor: 0.5,
         });
+
         this.handleRemoteEvents();
+        callback();
     }
 
     public isConnect() {
@@ -46,62 +60,25 @@ export class SocketIoClient {
      */
     private handleRemoteEvents() {
         this.socket
-            .on('connection', () => {
-                logger.info('connected to web socket server');
-                this.isConnected = true;
-            })
-            .on('disconnect', () => {
-                logger.info('disconnect web socket server');
-                this.isConnected = false;
-            })
-            .on('connect_error', () => {
-                logger.debug('connect_error');
-            })
-            .on('connect_timeout', () => {
-                logger.debug('connect_timeout');
-            })
-            .on('reconnect_attempt', () => {
-                logger.debug('reconnect_attempt');
-            })
-            .on('reconnecting', () => {
-                logger.debug('reconnecting');
-            })
-            .on('session-file-available', (data: any) => {
-                logger.info(`Стал доступен файл ${data.fileId} в сессии`);
+            .on('connect', () => logger.info('connected to web socket server'))
+            .on('disconnect', () => this.sendToClient('disconnect', 'error'))
 
-                /** Если ПКУ был запущен с флагом demo true - при сохрании файл доразмечается,
-                 * отправляется в папку out и отправляется на сервер. */
-                if (this.demoMode) {
-                    this.saveFileInDemoMode(data);
-                } else {
-                    this.saveFile(data);
-                }
-            });
+            .on('connect_error', () => this.sendToClient('disconnect', 'error'))
+            .on('connect_timeout', () => this.sendToClient('disconnect', 'error'))
+
+            .on('reconnect_attempt', () => this.sendToClient('reconnect_attempt'))
+            .on('reconnect_error', () => this.sendToClient('reconnect_error', 'error'))
+            .on('reconnect_failed', () => this.sendToClient('reconnect_failed', 'error'))
+            .on('reconnect', () => this.sendToClient('reconnect'));
     }
 
     // noinspection JSMethodCanBeStatic
-    private saveFile(data: any) {
-        try {
-            fs.writeFileSync('files/in/' + data.fileId + '.json', JSON.stringify(data.content));
-        } catch (e) {
-            logger.error('файл ' + data.fileId + ' не был сохранен с ошибкой' + e.message);
-        }
-    }
-
-    private saveFileInDemoMode(data: any) {
-        try {
-            fs.writeFileSync('files/in/' + data.fileId + '.json', JSON.stringify(data.content));
-            if (this.demoMode) {
-                //@ts-ignore
-                const file = new File({ fileId: data.fileId, filePath: '', dir: 'files/in/' });
-                // @ts-ignore
-                const server = new DemoMoveFileService(file);
-                server.moveAction();
-            }
-        } catch (e) {
-            logger.error(
-                'DEMO-режим - файл ' + data.fileId + ' не был сохранен с ошибкой' + e.message
-            );
-        }
+    private sendToClient(code: string, type: string = 'info') {
+        IPCServer.sendToClient('message.network', {
+            message: 'message.socket-io.' + code,
+            type,
+        });
     }
 }
+
+export default new SocketIoClient();

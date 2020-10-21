@@ -1,35 +1,27 @@
-import { SocketIoClient } from '../connections/SocketIoClient';
-import { IPCServer } from '../connections/IPCServer';
+import SIClient, { SocketIoClient } from '../connections/SocketIoClient';
+import IPCServer from '../connections/IPCServer';
 import logger from '../logger';
-import Message from '../messages';
+import fs from 'fs';
+import { File } from '../files/File';
+import { DemoMoveFileService } from './DemoMoveFileService';
 
 class SessionService {
-    IPCServer: IPCServer;
+    demoMode: boolean = false;
     client: SocketIoClient;
     id: number | false = false;
-    active: Boolean = false;
-    receivedFiles: Array<number> = [];
-    processedFiles: Array<number> = [];
     options: StartCommandOptions | undefined;
 
-    constructor(IPCServer: IPCServer) {
-        this.IPCServer = IPCServer;
-        this.client = new SocketIoClient();
+    constructor() {
+        this.client = SIClient;
     }
 
     start(options: StartCommandOptions) {
         this.options = options;
         if (this.options.demo) {
-            this.client.demoMode = true;
+            this.demoMode = true;
             logger.info('Сессия стартовала в DEMO-режиме');
         }
-        this.client.connect();
-
-        setTimeout(() => {
-            this.active = this.client.socket.connected;
-        }, 2000);
-
-        this.subscribe();
+        this.connect();
 
         this.client.send('session-start', {
             type: this.options.mode,
@@ -43,20 +35,12 @@ class SessionService {
     }
 
     stop() {
-        if (!this.isActive()) {
-            this.IPCServer.sendToClient('message.stop', {
-                message: 'message.stop.error',
-                type: 'error',
-            });
-            return;
-        }
-
+        this.connect();
         this.client.send('session-client-abort', { sessionId: this.id });
-
-        this.active = this.client.socket.connected;
     }
 
-    send(data: any) {
+    sendFile(data: any) {
+        this.connect();
         logger.debug('socketIo client=>server: session-file-send');
         this.client.send('session-file-send', {
             sessionId: this.id,
@@ -66,79 +50,90 @@ class SessionService {
     }
 
     reconnect() {
-        this.client.connect();
-        this.active = this.client.socket.connected;
-        this.subscribe();
+        this.connect();
         this.client.send('session-reconnect');
     }
 
-    /** Сессия уже запущена? */
-    isActive() {
-        return this.active;
+    connect() {
+        this.client.connect(() => {
+            this.subscribe();
+        });
+    }
+
+    // noinspection JSMethodCanBeStatic
+    private saveFile(data: any) {
+        try {
+            fs.writeFileSync('files/in/' + data.fileId + '.json', JSON.stringify(data.content));
+        } catch (e) {
+            logger.error('файл ' + data.fileId + ' не был сохранен с ошибкой' + e.message);
+        }
+    }
+
+    /**
+     * В демо режиме сессия сама размечает файл и отправляет на сервер
+     * @param data
+     * @private
+     */
+    private saveFileInDemoMode(data: any) {
+        try {
+            this.saveFile(data);
+            if (this.demoMode) {
+                //@ts-ignore
+                const file = new File({ fileId: data.fileId, filePath: '', dir: 'files/in/' });
+                // @ts-ignore
+                const server = new DemoMoveFileService(file);
+                server.moveAction();
+            }
+        } catch (e) {
+            logger.error('DEMO-режим - файл ' + data.fileId + ' не был сохранен с ошибкой' + e.message);
+        }
     }
 
     subscribe() {
+        console.log('subscribe');
         this.client.socket
 
             // START
             .on('session-start-success', ({ sessionId }: any) => {
                 this.id = sessionId;
-                this.IPCServer.sendToClient('message.start', {
-                    message: 'message.start.success',
-                    source: sessionId,
-                });
+                IPCServer.sendToClient('message.start', { message: 'message.start.success', source: sessionId });
             })
             .on('session-start-error', (data: any) => {
-                this.IPCServer.sendToClient('message.start', {
-                    message: 'message.start.error',
-                    source: data,
-                    type: 'error',
-                });
+                IPCServer.sendToClient('message.start', { message: 'message.start.error', source: data, type: 'error' });
             })
             .on('connection-auth-error', (data: any) => {
-                this.IPCServer.sendToClient('message.start', {
-                    message: 'message.start.auth',
-                    source: data,
-                    type: 'error',
-                });
-                this.IPCServer.sendToClient('message.reconnect', {
-                    message: 'message.reconnect.auth',
-                    source: data,
-                    type: 'error',
-                });
+                IPCServer.sendToClient('message.start', { message: 'message.start.auth', source: data, type: 'error' });
+                IPCServer.sendToClient('message.reconnect', { message: 'message.reconnect.auth', source: data, type: 'error' });
             })
 
             // RECONNECT
             .on('session-reconnect-success', ({ sessionId }: any) => {
-                this.IPCServer.sendToClient('message.reconnect', {
-                    message: 'message.reconnect.success',
-                    source: sessionId,
-                });
+                IPCServer.sendToClient('message.reconnect', { message: 'message.reconnect.success', source: sessionId });
                 this.id = sessionId;
             })
             .on('session-reconnect-error', (data: any) => {
-                this.IPCServer.sendToClient('message.reconnect', {
-                    message: 'message.reconnect.error',
-                    source: data,
-                    type: 'error',
-                });
+                IPCServer.sendToClient('message.reconnect', { message: 'message.reconnect.error', source: data, type: 'error' });
             })
 
             // STOP
             .on('session-client-abort-success', (data: any) => {
-                this.IPCServer.sendToClient('message.stop', {
-                    message: 'message.stop.success',
-                    source: data,
-                });
+                IPCServer.sendToClient('message.stop', { message: 'message.stop.success', source: data });
                 this.client.disconnect();
             })
             .on('session-client-abort-error', (data: any) => {
-                this.IPCServer.sendToClient('message.stop', {
-                    message: 'message.stop.error',
-                    source: data,
-                    type: 'error',
-                });
+                IPCServer.sendToClient('message.stop', { message: 'message.stop.error', source: data, type: 'error' });
                 this.client.disconnect();
+            })
+
+            // SERVER SENT FILE
+            .on('session-file-available', (data: any) => {
+                logger.info(`Стал доступен файл ${data.fileId} в сессии `);
+
+                if (this.demoMode) {
+                    this.saveFileInDemoMode(data);
+                } else {
+                    this.saveFile(data);
+                }
             });
     }
 }

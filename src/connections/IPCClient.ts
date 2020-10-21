@@ -2,7 +2,9 @@ import RootIPC from 'node-ipc';
 import fs from 'fs';
 import CliException from '../exceptions/CliException';
 import { socketPath, IPCServerName, isDebug } from '../config';
-import { IPCClientLogger } from '../logger';
+import { IPCClientLogger, CommandLogger } from '../logger';
+import MessageData from '../types/Message';
+import Message from '../messages';
 
 /**
  * Класс клиента для подключения
@@ -17,14 +19,36 @@ class IPCClient {
         }
 
         RootIPC.config.logger = function (message) {
-            IPCClientLogger.info(message);
+            IPCClientLogger.verbose(message);
         };
     }
 
+    /**
+     * Подключается к IPCServer
+     *
+     * Обработка событий и отправка сообщений
+     * возможна только после разрешения промиса
+     */
     public connect() {
         return new Promise(resolve => {
             this.initialized = true;
             RootIPC.connectTo(IPCServerName, socketPath, () => {
+                this.getSelector()
+
+                    // system
+                    .on('error', (error: any) => this.throwError('error', error))
+                    .on('socket.disconnected', () => this.throwError('socket.disconnected'))
+                    .on('destroy', () => this.throwError('destroy'))
+                    .on('disconnect', () => this.throwError('disconnect'))
+
+                    // network
+                    .on('message.network', (messageData: MessageData) => {
+                        Message.fromDictionary(messageData).show();
+                        if (messageData.message === 'message.socket-io.reconnect_failed') {
+                            process.exit(1);
+                        }
+                    });
+
                 resolve(this.getSelector());
             });
         });
@@ -53,9 +77,7 @@ class IPCClient {
         }
 
         if (!this.initialized) {
-            throw new CliException(
-                'Невозможно отправить сообщение т.к. подключение не инициализировано'
-            );
+            throw new CliException('Невозможно отправить сообщение т.к. подключение не инициализировано');
         }
     }
 
@@ -82,34 +104,20 @@ class IPCClient {
         return this;
     }
 
-    /**
-     * Обёртка над .on ipc-client, для конфигурации и управления из cli-команд
-     * @param event
-     * @param callback
-     * @protected
-     */
-    public on(event: string, callback: any) {
-        this.checkConnect();
+    // noinspection JSMethodCanBeStatic
+    private throwError(eventType: string, error: any = null) {
+        const message = 'Сокет IPCClient отключился ';
 
-        this.getSelector().on(event, callback);
-        return this;
+        if (eventType == 'disconnect') {
+            IPCClientLogger.info(message + eventType + ' %s', error || '');
+            process.exit(1);
+        }
+
+        CommandLogger.error(message + eventType + ' %s', error || '');
+        IPCClientLogger.error(message + eventType + ' %s', error || '');
+
+        process.exit(1);
     }
-
-    /**
-     * Синхронный метод ожидания программы
-     * @param ms
-     * @protected
-     * @deprecated
-     */
-    public sleep(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    /**
-     * Установим silent на логи
-     * @deprecated
-     */
-    public setConfigSilent() {}
 }
 
 export default IPCClient;

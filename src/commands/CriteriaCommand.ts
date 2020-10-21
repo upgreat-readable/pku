@@ -16,20 +16,9 @@ class CriteriaCommand extends AbstractCommand {
 
     protected bindOptions(command: Command) {
         command.option('--fileId <fileId>', 'id файла в папке files/custom', /^\d+$/);
-        command.option(
-            '--filePath <filePath>',
-            'путь к файлу относительно папки files | --filePath myDir/filepathWithExtension.json'
-        );
-        command.option(
-            '--dir <dir>',
-            'параметр директории, из которой необходимо считывать файлы',
-            'files/custom/'
-        );
-        command.option(
-            '--save <save>',
-            'параметр, позволяющий сохранить результаты расчёта критериев в отдельный файл',
-            false
-        );
+        command.option('--filePath <filePath>', 'путь к файлу относительно папки files | --filePath myDir/filepathWithExtension.json');
+        command.option('--dir <dir>', 'параметр директории, из которой необходимо считывать файлы', 'files/custom/');
+        command.option('--save <save>', 'параметр, позволяющий сохранить результаты расчёта критериев в отдельный файл', false);
     }
 
     /**
@@ -52,9 +41,7 @@ class CriteriaCommand extends AbstractCommand {
 
             if (!saveString) {
                 saveString = 'files/custom/temp.json';
-                CommandLogger.error(
-                    'Не удалось отрезолвить путь к файлу. Результат последнего расчёта будет сохранен в files/custom/temp.json'
-                );
+                CommandLogger.error('Не удалось отрезолвить путь к файлу. Результат последнего расчёта будет сохранен в files/custom/temp.json');
             }
 
             const service = new CriteriaService(fileJsonContent);
@@ -64,7 +51,7 @@ class CriteriaCommand extends AbstractCommand {
                 fileJsonContent.criteria = JSON.parse(service.getResult());
                 fs.writeFileSync(saveString, JSON.stringify(fileJsonContent));
 
-                CommandLogger.info('Результат записан в ' + saveString);
+                CommandLogger.info('Критерии: Результат записан в ' + saveString);
             } else {
                 console.log(service.getResult());
             }

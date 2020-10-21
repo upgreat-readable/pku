@@ -1,5 +1,5 @@
 #!/usr/local/bin/node
-import { IPCServer } from './connections/IPCServer';
+import IPCServer from './connections/IPCServer';
 import * as cluster from 'cluster';
 
 /**
@@ -12,4 +12,4 @@ import * as cluster from 'cluster';
 //     const server = new IPCServer();
 // }
 
-const server = new IPCServer();
+const server = IPCServer.run();

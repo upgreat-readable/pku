@@ -19,7 +19,7 @@ class ReconnectCommand extends AbstractCommand {
         await new Promise(resolve => {
             const client = new IPCClient();
             client.connect().then((connection: any) => {
-                connection.on('message.stop', (messageData: MessageData) => {
+                connection.on('message.reconnect', (messageData: MessageData) => {
                     Message.fromDictionary(messageData).setLogger(CommandLogger).show();
 
                     resolve();

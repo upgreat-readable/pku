@@ -6,18 +6,12 @@ let consoleFormat = format.combine(format.json(), format.timestamp(), format.unc
 let fileFormat = consoleFormat;
 
 if (logFormat === 'pretty') {
-    consoleFormat = format.combine(
-        format.timestamp(),
-        format.splat(),
-        format.colorize(),
-        format.simple(),
-        printf
-    );
+    consoleFormat = format.combine(format.timestamp(), format.splat(), format.colorize(), format.simple(), printf);
     fileFormat = format.combine(format.simple(), format.timestamp(), printf, format.uncolorize());
 }
 
 export const CommandLogger = winston.createLogger({
-    level: 'debug',
+    level: 'verbose',
     transports: [
         new winston.transports.Console({ format: consoleFormat }),
         new winston.transports.File({ filename: 'logs/command.log', format: fileFormat }),
@@ -25,7 +19,7 @@ export const CommandLogger = winston.createLogger({
 });
 
 export const IPCServerLogger = winston.createLogger({
-    level: 'debug',
+    level: 'verbose',
     transports: [
         new winston.transports.Console({ format: consoleFormat }),
         new winston.transports.File({ filename: 'logs/ipc-server.log', format: fileFormat }),
@@ -33,14 +27,12 @@ export const IPCServerLogger = winston.createLogger({
 });
 
 export const IPCClientLogger = winston.createLogger({
-    level: 'debug',
-    transports: [
-        new winston.transports.File({ filename: 'logs/ipc-client.log', format: fileFormat }),
-    ],
+    level: 'verbose',
+    transports: [new winston.transports.File({ filename: 'logs/ipc-client.log', format: fileFormat })],
 });
 
 export default winston.createLogger({
-    level: 'debug',
+    level: 'verbose',
     transports: [
         new winston.transports.Console({ format: consoleFormat }),
         new winston.transports.File({ filename: 'logs/combined.log', format: fileFormat }),

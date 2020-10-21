@@ -1,6 +1,6 @@
 import RootIPC from 'node-ipc';
-import logger, { IPCServerLogger } from '../logger';
-import { IPCServerName, socketPath } from '../config';
+import { IPCServerLogger } from '../logger';
+import { socketPath } from '../config';
 import fs from 'fs';
 import SessionService from '../service/SessionService';
 import MessageData from '../types/Message';
@@ -9,23 +9,34 @@ import Message from '../messages';
 /**
  * Класс IPC сервера
  * отвечает за работу демонизированного процесса
+ *
+ * Главная задача быть прослойкой между (Command + IPCClient) <=> SessionService(SocketIO)
  */
 export class IPCServer {
-    static readonly sessionStartEvent = 'message.start';
-    static readonly sessionStopEvent = 'ipc.session-stop';
-    static readonly sendFileEvent = 'ipc.send-file';
-    static readonly sessionReconnectEvent = 'ipc.session-reconnect';
-    session: SessionService;
+    /**
+     * *magic*
+     * т.к. константы транслируются в сервис в виде вызова метода SessionService
+     * То они должны соответствовать названиями методов SessionService
+     */
+    static readonly sessionStartEvent = 'ipc.start';
+    static readonly sessionStopEvent = 'ipc.stop';
+    static readonly sendFileEvent = 'ipc.sendFile';
+    static readonly sessionReconnectEvent = 'ipc.reconnect';
+
+    /** Последнее подключение клиента-сокета */
     lastSocket: any;
+
+    // @ts-ignore
+    session: SessionService;
 
     /**
      * Создает RootIPC сервер, который будет слушать события
      * @private
      */
-    constructor() {
+    run() {
         this.checkSocket();
         this.configureIPCServer();
-        this.session = new SessionService(this);
+        this.session = new SessionService();
 
         RootIPC.serve(socketPath);
         this.handleEvents();
@@ -39,7 +50,7 @@ export class IPCServer {
     // noinspection JSMethodCanBeStatic
     private configureIPCServer() {
         RootIPC.config.logger = function (message) {
-            IPCServerLogger.info(message);
+            IPCServerLogger.verbose(message);
         };
     }
 
@@ -50,53 +61,45 @@ export class IPCServer {
     public checkSocket() {
         if (fs.existsSync(socketPath)) {
             fs.unlinkSync(socketPath);
-            // throw new CliException('Нельзя запустить второй процесс сервера');
         }
-    }
-
-    private handleEvents() {
-        const {
-            sendFileEvent,
-            sessionStartEvent,
-            sessionStopEvent,
-            sessionReconnectEvent,
-        } = IPCServer;
-
-        this.getCurrent()
-            .on(sendFileEvent, data => this.onSendFile(data))
-            .on(sessionStartEvent, (data, socket) => this.onSessionStart(data, socket))
-            .on(sessionStopEvent, (data, socket) => this.onSessionStop(data, socket))
-            .on(sessionReconnectEvent, () => this.onSessionReconnect());
-    }
-
-    public onSessionStart(options: StartOptions, socket: any) {
-        this.lastSocket = socket;
-        logger.debug('IPC server handle: ' + IPCServer.sessionStartEvent);
-        this.session.start(options);
-    }
-
-    public onSendFile(data: any) {
-        logger.debug('IPC server handle: ' + IPCServer.sendFileEvent);
-        this.session.send(data);
-    }
-
-    public onSessionStop(data: any, socket: any) {
-        this.lastSocket = socket;
-        logger.debug('IPC server handle: ' + IPCServer.sessionStopEvent);
-        this.session.stop();
-    }
-
-    public onSessionReconnect() {
-        logger.debug('IPC server handle: ' + IPCServer.sessionReconnectEvent);
-        this.session.reconnect();
     }
 
     /** Отправка сообщения подключившемуся клиенту */
     public sendToClient(event: string, messageData: MessageData) {
         // рендерим сообщение в консоль сервера
-
         Message.fromDictionary(messageData).show();
+
+        if (!this.lastSocket) {
+            IPCServerLogger.error('Не найден socket IPC клиента. Неудачная попытка послать ' + event);
+        }
 
         this.getCurrent().emit(this.lastSocket, event, messageData);
     }
+
+    private handleEvents() {
+        const { sendFileEvent, sessionStartEvent, sessionStopEvent, sessionReconnectEvent } = IPCServer;
+
+        this.getCurrent()
+            .on(sendFileEvent, (data, socket) => this.transferEventToSession(sendFileEvent, data, socket))
+            .on(sessionStartEvent, (data, socket) => this.transferEventToSession(sessionStartEvent, data, socket))
+            .on(sessionStopEvent, (data, socket) => this.transferEventToSession(sessionStopEvent, data, socket))
+            .on(sessionReconnectEvent, (data, socket) => this.transferEventToSession(sessionReconnectEvent, data, socket));
+    }
+
+    /**
+     * Метод транслирует вызов в сессию
+     * @param event
+     * @param clientPayload
+     * @param socket
+     * @private
+     */
+    private transferEventToSession(event: string, clientPayload: any, socket: any) {
+        this.lastSocket = socket;
+        const methodName = event.replace('ipc.', '');
+
+        // @ts-ignore
+        this.session[methodName](clientPayload);
+    }
 }
+
+export default new IPCServer();
