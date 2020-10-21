@@ -7,49 +7,12 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 -   **logs:** формат логов теперь не копирует символы в файлы. TimeStamp в логах ([419a82f](https://github.com/upgreat-readable/pku/commit/419a82f77d0c4132cff3f09668e31f2058edd18d)), closes [#8](https://github.com/upgreat-readable/pku/issues/8)
--   **фидбек комманд:** фидбек команд - в работе ([d08d283](https://github.com/upgreat-readable/pku/commit/d08d2834bdfa540196a7e8d804decf3902b42cb1))
--   **фидбек от комманд:** команды теперь возвращают фидбек по выполнению ([9aea9a1](https://github.com/upgreat-readable/pku/commit/9aea9a1c9d58f140bae9cf491955dfb5b0d9a0fe))
-
-### Bug Fixes
-
--   **count:** поправил регулярку и валидцию counta ([6af9edd](https://github.com/upgreat-readable/pku/commit/6af9edd7b2350fd1718fbf5d170c0070f51e9442))
--   **sync versions:** sync ci versions ([46f3a6f](https://github.com/upgreat-readable/pku/commit/46f3a6f1e32a0a41238e880db4b5f1da156a4b84))
 
 ### [1.2.2](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.2.2) (2020-10-20)
 
-### Features
-
--   **фидбек комманд:** фидбек команд - в работе ([d08d283](https://github.com/upgreat-readable/pku/commit/d08d2834bdfa540196a7e8d804decf3902b42cb1))
--   **фидбек от комманд:** команды теперь возвращают фидбек по выполнению ([9aea9a1](https://github.com/upgreat-readable/pku/commit/9aea9a1c9d58f140bae9cf491955dfb5b0d9a0fe))
-
-### Bug Fixes
-
--   **count:** поправил регулярку и валидцию counta ([6af9edd](https://github.com/upgreat-readable/pku/commit/6af9edd7b2350fd1718fbf5d170c0070f51e9442))
--   **sync versions:** sync ci versions ([46f3a6f](https://github.com/upgreat-readable/pku/commit/46f3a6f1e32a0a41238e880db4b5f1da156a4b84))
-
 ### [1.2.1](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.2.1) (2020-10-20)
 
-### Features
-
--   **фидбек комманд:** фидбек команд - в работе ([d08d283](https://github.com/upgreat-readable/pku/commit/d08d2834bdfa540196a7e8d804decf3902b42cb1))
--   **фидбек от комманд:** команды теперь возвращают фидбек по выполнению ([9aea9a1](https://github.com/upgreat-readable/pku/commit/9aea9a1c9d58f140bae9cf491955dfb5b0d9a0fe))
-
-### Bug Fixes
-
--   **count:** поправил регулярку и валидцию counta ([6af9edd](https://github.com/upgreat-readable/pku/commit/6af9edd7b2350fd1718fbf5d170c0070f51e9442))
--   **sync versions:** sync ci versions ([46f3a6f](https://github.com/upgreat-readable/pku/commit/46f3a6f1e32a0a41238e880db4b5f1da156a4b84))
-
 ## [1.2.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.2.0) (2020-10-19)
-
-### Features
-
--   **фидбек комманд:** фидбек команд - в работе ([d08d283](https://github.com/upgreat-readable/pku/commit/d08d2834bdfa540196a7e8d804decf3902b42cb1))
--   **фидбек от комманд:** команды теперь возвращают фидбек по выполнению ([9aea9a1](https://github.com/upgreat-readable/pku/commit/9aea9a1c9d58f140bae9cf491955dfb5b0d9a0fe))
-
-### Bug Fixes
-
--   **count:** поправил регулярку и валидцию counta ([6af9edd](https://github.com/upgreat-readable/pku/commit/6af9edd7b2350fd1718fbf5d170c0070f51e9442))
--   **sync versions:** sync ci versions ([46f3a6f](https://github.com/upgreat-readable/pku/commit/46f3a6f1e32a0a41238e880db4b5f1da156a4b84))
 
 ## [1.1.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.1.0) (2020-10-19)
 
@@ -58,36 +21,19 @@ All notable changes to this project will be documented in this file. See [standa
 -   **фидбек комманд:** фидбек команд - в работе ([d08d283](https://github.com/upgreat-readable/pku/commit/d08d2834bdfa540196a7e8d804decf3902b42cb1))
 -   **фидбек от комманд:** команды теперь возвращают фидбек по выполнению ([9aea9a1](https://github.com/upgreat-readable/pku/commit/9aea9a1c9d58f140bae9cf491955dfb5b0d9a0fe))
 
-### Bug Fixes
-
--   **count:** поправил регулярку и валидцию counta ([6af9edd](https://github.com/upgreat-readable/pku/commit/6af9edd7b2350fd1718fbf5d170c0070f51e9442))
--   **sync versions:** sync ci versions ([46f3a6f](https://github.com/upgreat-readable/pku/commit/46f3a6f1e32a0a41238e880db4b5f1da156a4b84))
-
 ### [1.0.9](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.0.9) (2020-10-14)
 
 ### Bug Fixes
 
 -   **count:** поправил регулярку и валидцию counta ([6af9edd](https://github.com/upgreat-readable/pku/commit/6af9edd7b2350fd1718fbf5d170c0070f51e9442))
--   **sync versions:** sync ci versions ([46f3a6f](https://github.com/upgreat-readable/pku/commit/46f3a6f1e32a0a41238e880db4b5f1da156a4b84))
 
 ### [1.0.8](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.0.8) (2020-10-14)
 
 ### Bug Fixes
 
--   **sync versions:** sync ci versions ([46f3a6f](https://github.com/upgreat-readable/pku/commit/46f3a6f1e32a0a41238e880db4b5f1da156a4b84))
-
 ### [1.0.6](https://github.com/upgreat-readable/pku/compare/v1.0.4...v1.0.6) (2020-10-13)
 
-### Bug Fixes
-
--   **ci:** fix ci ([bd4a3ea](https://github.com/upgreat-readable/pku/commit/bd4a3ea517fb1a2dc8db825eee29870880f1d3b2))
--   **fix ci:** fix ([64b690e](https://github.com/upgreat-readable/pku/commit/64b690e9f3fe619e6567c9bab844d939de42cd2d))
-
 ### [1.0.5](https://github.com/upgreat-readable/pku/compare/v1.0.4...v1.0.5) (2020-10-12)
-
-### Bug Fixes
-
--   **fix ci:** fix ([64b690e](https://github.com/upgreat-readable/pku/commit/64b690e9f3fe619e6567c9bab844d939de42cd2d))
 
 ### [1.0.4](https://github.com/upgreat-readable/pku/compare/v1.0.3...v1.0.4) (2020-10-12)
 
