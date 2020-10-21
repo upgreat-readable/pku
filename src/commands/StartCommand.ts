@@ -42,8 +42,8 @@ class StartCommand extends AbstractCommand {
                     resolve();
                     client.disconnect();
                 });
+                client.sendMessage(IPCServer.sessionStartEvent, options);
             });
-            client.sendMessage(IPCServer.sessionStartEvent, options);
         });
     };
 }

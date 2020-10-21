@@ -34,6 +34,7 @@ class SendFileCommand extends AbstractCommand {
                 fileId: options.fileId, // @ts-ignore
                 content: this.getFileContent(options.fileId),
             });
+            client.disconnect();
         });
     };
 

@@ -1,5 +1,4 @@
 import AbstractCommand from './interface/AbstractCommand';
-import { Command } from 'commander';
 import { IPCServer } from '../connections/IPCServer';
 import IPCClient from '../connections/IPCClient';
 import MessageData from '../types/Message';
@@ -26,8 +25,8 @@ class ReconnectCommand extends AbstractCommand {
                     resolve();
                     client.disconnect();
                 });
+                client.sendMessage(IPCServer.sessionReconnectEvent);
             });
-            client.sendMessage(IPCServer.sessionReconnectEvent);
         });
     };
 }

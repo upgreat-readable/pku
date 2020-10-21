@@ -1,8 +1,5 @@
-import RootIPC from 'node-ipc';
 import fs from 'fs';
-import logger from '../logger';
 import { File } from '../files/File';
-import CliException from '../exceptions/CliException';
 import IPCClient from '../connections/IPCClient';
 import { IPCServer } from '../connections/IPCServer';
 import { blobSelections } from '../DemoSelectionExamples';
@@ -29,6 +26,7 @@ export class DemoMoveFileService {
                 fileId: this.file.id,
                 content: this.getFileContentOut(),
             });
+            client.disconnect();
         });
     }
 

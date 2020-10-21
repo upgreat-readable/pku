@@ -24,8 +24,8 @@ class StopCommand extends AbstractCommand {
                     resolve();
                     client.disconnect();
                 });
+                client.sendMessage(IPCServer.sessionStopEvent);
             });
-            client.sendMessage(IPCServer.sessionStopEvent);
         });
     };
 }
