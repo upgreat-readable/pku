@@ -11,7 +11,7 @@ jobs:
       YANDEX_SECRET: ${{ secrets.YANDEX_DOCKER_PASS }}
     steps:
       - name: Check out repository #git clone current repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
       - run: pwd
       - run: ls -l
       - run: npm install
