@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.2](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.3.2) (2020-10-22)
+
+### Features
+
+-   **logs:** расширение формата, использования принудительно uncolorize для файлов ([719e537](https://github.com/upgreat-readable/pku/commit/719e5375b26a14cc9ce16e667e304c054065ef22))
+-   **logs:** формат логов теперь не копирует символы в файлы. TimeStamp в логах ([419a82f](https://github.com/upgreat-readable/pku/commit/419a82f77d0c4132cff3f09668e31f2058edd18d)), closes [#8](https://github.com/upgreat-readable/pku/issues/8)
+-   **фидбек комманд:** фидбек команд - в работе ([d08d283](https://github.com/upgreat-readable/pku/commit/d08d2834bdfa540196a7e8d804decf3902b42cb1))
+-   **фидбек от комманд:** команды теперь возвращают фидбек по выполнению ([9aea9a1](https://github.com/upgreat-readable/pku/commit/9aea9a1c9d58f140bae9cf491955dfb5b0d9a0fe))
+
+### Bug Fixes
+
+-   **count:** поправил регулярку и валидцию counta ([6af9edd](https://github.com/upgreat-readable/pku/commit/6af9edd7b2350fd1718fbf5d170c0070f51e9442))
+-   **logs:** убраны логи ipc.client в консоли ([c931547](https://github.com/upgreat-readable/pku/commit/c93154759da6792f591088cbb1bb0dad9ebbc7e8))
+-   **messages:** повышена стабильность отдачи уведомлений ([1705747](https://github.com/upgreat-readable/pku/commit/170574771e8200a63b5ef80e52959c6e4ee1165f))
+-   **sync versions:** sync ci versions ([46f3a6f](https://github.com/upgreat-readable/pku/commit/46f3a6f1e32a0a41238e880db4b5f1da156a4b84))
+
 ### [1.3.1](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.3.1) (2020-10-21)
 
 ### Bug Fixes
