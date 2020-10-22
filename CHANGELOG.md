@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.2](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.3.2) (2020-10-22)
+
+### Features
+
+-   **logs:** дополнительная обработка и логирование исключительных случаев
+-   **psr:** обновленная версия
+-   **logs:** расширение формата, использования принудительно uncolorize для файлов ([719e537](https://github.com/upgreat-readable/pku/commit/719e5375b26a14cc9ce16e667e304c054065ef22))
+
 ### [1.3.1](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.3.1) (2020-10-21)
 
 ### Bug Fixes
