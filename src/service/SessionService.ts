@@ -134,6 +134,13 @@ class SessionService {
                 } else {
                     this.saveFile(data);
                 }
+            })
+
+            .on('session-file-send-success', (data: any) => {
+                IPCServer.sendToClient('message.file', { message: 'message.file.success', source: data });
+            })
+            .on('session-file-send-error', (data: any) => {
+                IPCServer.sendToClient('message.file', { message: 'message.file.error', source: data, type: 'error' });
             });
     }
 }
