@@ -4,6 +4,9 @@ import { Command } from 'commander';
 import fs from 'fs';
 import { IPCServer } from '../connections/IPCServer';
 import CliException from '../exceptions/CliException';
+import MessageData from '../types/Message';
+import Message from '../messages';
+import { CommandLogger } from '../logger';
 
 /**
  * Команда отправки файла
@@ -18,23 +21,30 @@ class SendFileCommand extends AbstractCommand {
     }
 
     /** Обработка команды */
-    protected action = (options: FileOptions) => {
-        try {
-            // @ts-ignore
-            this.getFileContent(options.fileId);
-        } catch (e) {
-            throw new CliException('Указанный файл не существует.');
-        }
+    protected action = async (options: FileOptions) => {
+        await new Promise(resolve => {
+            try {
+                // @ts-ignore
+                this.getFileContent(options.fileId);
+            } catch (e) {
+                throw new CliException('Указанный файл не существует.');
+            }
+            this.validateOptions(options);
 
-        this.validateOptions(options);
+            const client = new IPCClient();
+            client.connect().then((connection: any) => {
+                connection.on('message.file', (messageData: MessageData) => {
+                    Message.fromDictionary(messageData).setLogger(CommandLogger).show();
 
-        const client = new IPCClient();
-        client.connect().then(() => {
-            client.sendMessage(IPCServer.sendFileEvent, {
-                fileId: options.fileId, // @ts-ignore
-                content: this.getFileContent(options.fileId),
+                    resolve();
+                    client.disconnect();
+                });
+
+                client.sendMessage(IPCServer.sendFileEvent, {
+                    fileId: options.fileId, // @ts-ignore
+                    content: this.getFileContent(options.fileId),
+                });
             });
-            client.disconnect();
         });
     };
 

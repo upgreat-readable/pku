@@ -21,4 +21,7 @@ export default {
     'message.socket-io.reconnect_error': 'network: reconnect_error',
     'message.socket-io.reconnect_failed': 'network: reconnect_failed',
     'message.socket-io.reconnect': 'network: reconnect success',
+
+    'message.file.success': 'Файл был успешно отправлен',
+    'message.file.error': 'Файл не был отправлен',
 };

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.4.0) (2020-10-22)
+
+### Features
+
+-   **fix savefile:** fix saveFile, 300 default count value ([3c2df68](https://github.com/upgreat-readable/pku/commit/3c2df681e9eed09969e8a886c5d8ce1f71eadbfc))
+-   **fix savefile:** send теперь дает фидбек
+
 ### [1.3.2](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.3.2) (2020-10-22)
 
 ### Features
