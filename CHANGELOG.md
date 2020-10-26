@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.4.1) (2020-10-26)
+
+### Bug Fixes
+
+-   **demo:** fix demo mode ([d1f6fd8](https://github.com/upgreat-readable/pku/commit/d1f6fd87b1bea04df53e3a279c5c85ff23527c64))
+
 ## [1.4.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.4.0) (2020-10-22)
 
 ### Features
