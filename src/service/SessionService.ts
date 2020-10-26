@@ -79,9 +79,7 @@ class SessionService {
             this.saveFile(data);
             if (this.demoMode) {
                 //@ts-ignore
-                const file = new File({ fileId: data.fileId, filePath: '', dir: 'files/in/' });
-                // @ts-ignore
-                const server = new DemoMoveFileService(file);
+                let server = new DemoMoveFileService(data);
                 server.moveAction();
             }
         } catch (e) {
@@ -128,6 +126,7 @@ class SessionService {
             // SERVER SENT FILE
             .on('session-file-available', (data: any) => {
                 logger.info(`Стал доступен файл ${data.fileId} в сессии `);
+                logger.info(`Demo mode -  ${this.demoMode}`);
 
                 if (this.demoMode) {
                     this.saveFileInDemoMode(data);

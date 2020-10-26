@@ -11,8 +11,7 @@ import { CommandLogger } from '../logger';
 class DemoMoveFileCommand extends AbstractCommand {
     name: string = 'demoMoveFile';
 
-    description: string =
-        'Команда для теста обмена. Перемещает файл из in в out с добавлением разметки';
+    description: string = 'Команда для теста обмена. Перемещает файл из in в out с добавлением разметки';
 
     protected bindOptions(command: Command) {
         command.option('--fileId <fileId>', 'id файла в папке files/in/');
@@ -22,12 +21,8 @@ class DemoMoveFileCommand extends AbstractCommand {
      * Обработка команды
      */
     protected action = (options: FileOptions) => {
-        const filePath = 'files/in/';
         try {
-            // @ts-ignore
-            const file = new File({ fileId: options.fileId, filePath: '', dir: filePath });
-            // @ts-ignore
-            const server = new DemoMoveFileService(file);
+            const server = new DemoMoveFileService(options);
             server.moveAction();
         } catch (e) {
             CommandLogger.error(`Во время отправки произошла ошибка. \n${e.message}`);
