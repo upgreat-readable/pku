@@ -17,10 +17,13 @@ class SessionService {
 
     start(options: StartCommandOptions) {
         this.options = options;
+
+        this.demoMode = false;
         if (this.options.demo) {
             this.demoMode = true;
             logger.info('Сессия стартовала в DEMO-режиме');
         }
+
         this.connect();
 
         this.client.send('session-start', {
@@ -126,7 +129,6 @@ class SessionService {
             // SERVER SENT FILE
             .on('session-file-available', (data: any) => {
                 logger.info(`Стал доступен файл ${data.fileId} в сессии `);
-                logger.info(`Demo mode -  ${this.demoMode}`);
 
                 if (this.demoMode) {
                     this.saveFileInDemoMode(data);
