@@ -40,7 +40,7 @@ export class PsrService {
                 markups: [],
             },
         };
-
+        let i = 0;
         files.forEach((value, index, array) => {
             /* Считываем контент из файла */
             let jsonContent = value.getJson();
@@ -56,12 +56,13 @@ export class PsrService {
             }
 
             PsrObject.essay.markups.push({
-                id: 1,
+                id: i,
                 isExpert: expertMark,
                 third: false,
                 criteria: jsonContent.criteria,
                 selections: jsonContent.selections,
             });
+            i++;
         });
 
         return PsrObject;
