@@ -33,8 +33,8 @@ export class SocketIoClient {
             },
             transports: ['websocket'],
             reconnection: true,
-            reconnectionAttempts: 3,
-            reconnectionDelay: 1000, // how long to initially wait before attempting a new reconnection
+            reconnectionAttempts: 3000,
+            reconnectionDelay: 2500, // how long to initially wait before attempting a new reconnection
             reconnectionDelayMax: 3000, // maximum amount of time to wait between reconnection attempts. Each attempt increases the reconnection delay by 2x along with a randomization factor
             randomizationFactor: 0.5,
         });
