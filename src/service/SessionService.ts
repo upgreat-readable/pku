@@ -17,10 +17,13 @@ class SessionService {
 
     start(options: StartCommandOptions) {
         this.options = options;
+
+        this.demoMode = false;
         if (this.options.demo) {
             this.demoMode = true;
             logger.info('Сессия стартовала в DEMO-режиме');
         }
+
         this.connect();
 
         this.client.send('session-start', {
@@ -79,9 +82,7 @@ class SessionService {
             this.saveFile(data);
             if (this.demoMode) {
                 //@ts-ignore
-                const file = new File({ fileId: data.fileId, filePath: '', dir: 'files/in/' });
-                // @ts-ignore
-                const server = new DemoMoveFileService(file);
+                let server = new DemoMoveFileService(data);
                 server.moveAction();
             }
         } catch (e) {

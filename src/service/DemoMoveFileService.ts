@@ -3,14 +3,21 @@ import { File } from '../files/File';
 import IPCClient from '../connections/IPCClient';
 import { IPCServer } from '../connections/IPCServer';
 import { blobSelections } from '../DemoSelectionExamples';
+import CliException from '../exceptions/CliException';
+import MessageData from '../types/Message';
+import Message from '../messages';
+import { CommandLogger } from '../logger';
+import RootIPC from 'node-ipc';
+import { IPCServerName, socketPath } from '../config';
 
 export class DemoMoveFileService {
-    protected file: File;
+    protected file: any;
 
-    constructor(file: File) {
-        this.file = file;
+    constructor(file: any) {
+        this.file = new File({ fileId: file.fileId, filePath: '', dir: 'files/in/' });
     }
 
+    /** Обработка команды */
     public moveAction() {
         let fileContent = this.file.getJson();
         // @ts-ignore
@@ -20,13 +27,11 @@ export class DemoMoveFileService {
 
         fs.writeFileSync('files/out/' + this.file.id + '.json', JSON.stringify(fileContent));
 
-        const client = new IPCClient();
-        client.connect().then(() => {
-            client.sendMessage(IPCServer.sendFileEvent, {
+        RootIPC.connectTo(IPCServerName, socketPath, () => {
+            RootIPC.of.world.emit(IPCServer.sendFileEvent, {
                 fileId: this.file.id,
                 content: this.getFileContentOut(),
             });
-            client.disconnect();
         });
     }
 
