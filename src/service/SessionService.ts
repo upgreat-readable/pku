@@ -81,20 +81,13 @@ class SessionService {
         try {
             this.saveFile(data);
             if (this.demoMode) {
-                setTimeout(() => {
-                    //@ts-ignore
-                    let server = new DemoMoveFileService(data);
-                    server.moveAction();
-                }, SessionService.randomInteger(5, 90));
+                //@ts-ignore
+                let server = new DemoMoveFileService(data);
+                server.moveAction();
             }
         } catch (e) {
             logger.error('DEMO-режим - файл ' + data.fileId + ' не был сохранен с ошибкой' + e.message);
         }
-    }
-
-    private static randomInteger(min: number, max: number) {
-        let rand = min - 0.5 + Math.random() * (max - min + 1);
-        return Math.round(rand);
     }
 
     subscribe() {
@@ -135,6 +128,8 @@ class SessionService {
 
             // SERVER SENT FILE
             .on('session-file-available', (data: any) => {
+                logger.info(`Стал доступен файл ${data.fileId} в сессии `);
+
                 if (this.demoMode) {
                     this.saveFileInDemoMode(data);
                 } else {
