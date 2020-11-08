@@ -2,6 +2,8 @@ FROM node:12.16.3-stretch
 
 ENV LOCALTIME Europe/Moscow
 
+RUN ln -snf /usr/share/zoneinfo/$LOCALTIME /etc/localtime && echo $LOCALTIME > /etc/timezone
+
 RUN set -ex && \
 	mkdir -p /app/node_modules /app/build /app/files /app/logs && \
 	mkdir /files && \
