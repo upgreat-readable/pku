@@ -70,7 +70,8 @@ export class IPCServer {
         Message.fromDictionary(messageData).show();
 
         if (!this.lastSocket || !this.lastSocket.readable) {
-            IPCServerLogger.error('Не найден socket IPC клиента. Неудачная попытка послать ' + event);
+            IPCServerLogger.error('Пользователь не ожидает ответа. Пропущено.' + event);
+            return;
         }
 
         this.getCurrent().emit(this.lastSocket, event, messageData);
