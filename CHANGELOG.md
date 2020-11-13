@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.3](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.5.3) (2020-11-13)
+
+### Features
+
+-   **logs:** расширение формата, использования принудительно uncolorize для файлов ([719e537](https://github.com/upgreat-readable/pku/commit/719e5375b26a14cc9ce16e667e304c054065ef22))
+-   **logs:** формат логов теперь не копирует символы в файлы. TimeStamp в логах ([419a82f](https://github.com/upgreat-readable/pku/commit/419a82f77d0c4132cff3f09668e31f2058edd18d)), closes [#8](https://github.com/upgreat-readable/pku/issues/8)
+-   **metrics:** modern metrics calc ([fec9331](https://github.com/upgreat-readable/pku/commit/fec933191ca57a020b7634e3054a62de36635484))
+-   **start command:** интервал по умолчанию теперь 10 секунд ([073289d](https://github.com/upgreat-readable/pku/commit/073289d19060c80a2331a8c3ec1d8e491ed67ad9))
+-   **ws:** повышение количества попыток автоматического переподключения ([7892df2](https://github.com/upgreat-readable/pku/commit/7892df2e83919798158fed52f6fd39a1a2ae81b4))
+-   **фидбек комманд:** фидбек команд - в работе ([d08d283](https://github.com/upgreat-readable/pku/commit/d08d2834bdfa540196a7e8d804decf3902b42cb1))
+-   **фидбек от комманд:** команды теперь возвращают фидбек по выполнению ([9aea9a1](https://github.com/upgreat-readable/pku/commit/9aea9a1c9d58f140bae9cf491955dfb5b0d9a0fe))
+
+### Bug Fixes
+
+-   **count:** поправил регулярку и валидцию counta ([6af9edd](https://github.com/upgreat-readable/pku/commit/6af9edd7b2350fd1718fbf5d170c0070f51e9442))
+-   **demo:** fix demo mode ([d1f6fd8](https://github.com/upgreat-readable/pku/commit/d1f6fd87b1bea04df53e3a279c5c85ff23527c64))
+-   **ds:** неправильный формат файла ([9b9288a](https://github.com/upgreat-readable/pku/commit/9b9288a4a9dd0a08fc17981b170904488e7ad040))
+-   **fix demo:** fix demo mode ([7f96baf](https://github.com/upgreat-readable/pku/commit/7f96baf3294ab4d9159ae698d42c1b5fb4a29323))
+-   **fix savefile:** fix saveFile, 300 default count value ([3c2df68](https://github.com/upgreat-readable/pku/commit/3c2df681e9eed09969e8a886c5d8ce1f71eadbfc))
+-   **logs:** убраны логи ipc.client в консоли ([c931547](https://github.com/upgreat-readable/pku/commit/c93154759da6792f591088cbb1bb0dad9ebbc7e8))
+-   **messages:** повышена стабильность отдачи уведомлений ([1705747](https://github.com/upgreat-readable/pku/commit/170574771e8200a63b5ef80e52959c6e4ee1165f))
+-   **start command:** изменено количество файлов по умолчанию, теперь их 300 ([a096b4c](https://github.com/upgreat-readable/pku/commit/a096b4caf3087253fd35a883b9cbcb5078ba4621))
+-   **sync versions:** sync ci versions ([46f3a6f](https://github.com/upgreat-readable/pku/commit/46f3a6f1e32a0a41238e880db4b5f1da156a4b84))
+
 ### [1.5.2](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.5.2) (2020-11-08)
 
 ### [1.5.1](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.5.1) (2020-11-06)
