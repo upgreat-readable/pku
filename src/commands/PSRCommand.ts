@@ -4,6 +4,7 @@ import { PsrService } from '../service/PsrService';
 import { FileCollection } from '../files/FileCollection';
 import CliException from '../exceptions/CliException';
 import { CommandLogger } from '../logger';
+import { PsrNominationService } from '../service/PsrNominationService';
 
 // noinspection HtmlDeprecatedTag
 /**
@@ -21,11 +22,8 @@ class PSRCommand extends AbstractCommand {
             'перечень путей к файлу относительно папки files | --filePath myDir/filepathWithExtension.json',
             false
         );
-        command.option(
-            '--dir <dir>',
-            'параметр директории, из которой необходимо считывать файлы',
-            'files/custom/'
-        );
+        command.option('--dir <dir>', 'параметр директории, из которой необходимо считывать файлы', 'files/custom/');
+        command.option('--mode <mode>', 'режим, в котором запущен ПСР - normal/nomination. по-умолчанию - normal', 'normal');
     }
 
     /**
@@ -37,12 +35,21 @@ class PSRCommand extends AbstractCommand {
         this.validateOptions(options);
         try {
             let fileCollection = new FileCollection(options);
-            let server = new PsrService(fileCollection);
+            let server = {};
+            //@ts-ignore
+            const mode = options.mode;
+            if (mode === 'normal') {
+                server = new PsrService(fileCollection);
+            } else if (mode === 'nomination') {
+                server = new PsrNominationService(fileCollection);
+            } else {
+                throw new CliException('Модификация доступна только normal или nomination.');
+            }
+
+            //@ts-ignore
             console.log(server.getResult());
         } catch (e) {
-            CommandLogger.error(
-                'Во время расчёта метрик с помощью ПСР произошла ошибка.' + '\n' + e.message
-            );
+            CommandLogger.error('Во время расчёта метрик с помощью ПСР произошла ошибка.' + '\n' + e.message);
             process.exit(1);
         }
     };
