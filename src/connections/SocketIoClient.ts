@@ -44,7 +44,7 @@ export class SocketIoClient {
     }
 
     public isConnect() {
-        return this.socket.connected;
+        return this.socket && this.socket.connected;
     }
 
     public disconnect() {
