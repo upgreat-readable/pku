@@ -2,6 +2,7 @@ export const socketPath = '/tmp/ipc.sock';
 export const IPCServerName = 'world';
 export const logFormat = process.env.LOG_FORMAT;
 export const isDebug = process.env.DEBUG_FLAG;
+export const logPersistencePath = 'logs/persistence.log';
 
 export const debugLink = process.env.DEBUG_ADDRESS;
 export const link = debugLink ? debugLink : 'https://ds.readable.upgreat.one/pku';
