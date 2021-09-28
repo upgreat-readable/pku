@@ -4,6 +4,7 @@ import logger from '../logger';
 import fs from 'fs';
 import { File } from '../files/File';
 import { DemoMoveFileService } from './DemoMoveFileService';
+import LogPersistenceService from './LogPersistenceService';
 
 class SessionService {
     demoMode: boolean = false;
@@ -142,6 +143,12 @@ class SessionService {
             })
             .on('session-file-send-error', (data: any) => {
                 IPCServer.sendToClient('message.file', { message: 'message.file.error', source: data, type: 'error' });
+            })
+
+            .on('logs-get', async (data: any) => {
+                const border = new Date(data.from);
+                await LogPersistenceService.prototype.trimLog(border);
+                this.client.send('logs-send', await LogPersistenceService.prototype.getEntries(border));
             });
     }
 }
