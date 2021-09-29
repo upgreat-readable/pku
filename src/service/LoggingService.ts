@@ -13,7 +13,7 @@ class LoggingService {
         logger.log(info);
 
         if (this.client && this.client.isConnect()) {
-            this.client.send('logs-entry', info);
+            this.client.send('logs-entry', { ...info, timestamp: new Date().toISOString() });
         }
     }
 }
