@@ -12,7 +12,7 @@ class LoggingService {
     process(logger: Logger, info: LogEntry) {
         logger.log(info);
 
-        if (this.client.isConnect()) {
+        if (this.client && this.client.isConnect()) {
             this.client.send('logs-entry', info);
         }
     }
