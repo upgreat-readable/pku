@@ -22,7 +22,7 @@ class CliException extends Error {
         process.exit(1);
     }
 
-    private static showMessage(message: string) {
+    protected static showMessage(message: string) {
         LoggingService.prototype.process(logger, { level: 'error', message: `Ошибка: ${message}` });
     }
 }
