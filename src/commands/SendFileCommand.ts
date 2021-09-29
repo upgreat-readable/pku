@@ -1,12 +1,14 @@
-import AbstractCommand from './interface/AbstractCommand';
-import IPCClient from '../connections/IPCClient';
 import { Command } from 'commander';
 import fs from 'fs';
+
+import AbstractCommand from './interface/AbstractCommand';
+import IPCClient from '../connections/IPCClient';
 import { IPCServer } from '../connections/IPCServer';
 import CliException from '../exceptions/CliException';
 import MessageData from '../types/Message';
 import Message from '../messages';
 import { CommandLogger } from '../logger';
+import LoggingService from '../service/LoggingService';
 
 /**
  * Команда отправки файла
@@ -27,6 +29,7 @@ class SendFileCommand extends AbstractCommand {
                 // @ts-ignore
                 this.getFileContent(options.fileId);
             } catch (e) {
+                LoggingService.prototype.process(CommandLogger, { level: 'error', message: 'Ошибка отправки файла' });
                 throw new CliException('Указанный файл не существует.');
             }
             this.validateOptions(options);

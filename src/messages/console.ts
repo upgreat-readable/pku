@@ -4,7 +4,7 @@ export default {
     'message.start.auth': 'Произошла ошибка авторизации по токену',
 
     'message.reconnect.success': 'Сессия успешно переподключилась',
-    'message.reconnect.error': 'Не удалось переподключится к сессии',
+    'message.reconnect.error': 'Не удалось переподключиться к сессии',
     'message.reconnect.auth': 'Произошла ошибка авторизации по токену',
 
     'message.stop.success': 'Сессия прервана',

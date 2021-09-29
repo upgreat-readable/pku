@@ -47,7 +47,7 @@ class Message implements MessageData {
 
     public show() {
         if (this.source) {
-            this.loggingService.process(this.logger, { level: this.type, message: `${this.message} ${this.source}` });
+            this.loggingService.process(this.logger, { level: this.type, message: `${this.message} ${JSON.stringify(this.source)}` });
             return;
         }
 
