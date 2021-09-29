@@ -1,8 +1,12 @@
 import fs from 'fs';
+
 import logger from '../logger';
+import LoggingService from './LoggingService';
 
 // noinspection JSUnfilteredForInLoop
 export class GetFileListService {
+    private loggingService: LoggingService = new LoggingService();
+
     protected files: any;
 
     goSignal() {
@@ -16,7 +20,7 @@ export class GetFileListService {
                 return 'Список файлов не был найден.';
             }
         } catch (e) {
-            logger.error(e.message, e.trace);
+            this.loggingService.process(logger, { level: 'error', message: e.message, trace: e.trace });
             return 'Во время получения списка файлов произошла ошибка';
         }
     }

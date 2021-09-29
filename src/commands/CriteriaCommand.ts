@@ -1,16 +1,20 @@
 import { Command } from 'commander';
+import fs from 'fs';
+
 import AbstractCommand from './interface/AbstractCommand';
 import CriteriaService from '../service/CriteriaService';
 import CliException from '../exceptions/CliException';
-import fs from 'fs';
 import { FileCollection } from '../files/FileCollection';
 import { CommandLogger } from '../logger';
+import LoggingService from '../service/LoggingService';
 
 /**
  * Команда критериев
  * Возвращает json расчет критериев из пакета критериев
  */
 class CriteriaCommand extends AbstractCommand {
+    private loggingService: LoggingService = new LoggingService();
+
     name: string = 'criteria';
     description: string = 'Команда расчета критериев';
 
@@ -41,7 +45,10 @@ class CriteriaCommand extends AbstractCommand {
 
             if (!saveString) {
                 saveString = 'files/custom/temp.json';
-                CommandLogger.error('Не удалось отрезолвить путь к файлу. Результат последнего расчёта будет сохранен в files/custom/temp.json');
+                this.loggingService.process(CommandLogger, {
+                    level: 'error',
+                    message: 'Не удалось отрезолвить путь к файлу. Результат последнего расчёта будет сохранен в files/custom/temp.json',
+                });
             }
 
             const service = new CriteriaService(fileJsonContent);
@@ -51,12 +58,12 @@ class CriteriaCommand extends AbstractCommand {
                 fileJsonContent.criteria = JSON.parse(service.getResult());
                 fs.writeFileSync(saveString, JSON.stringify(fileJsonContent));
 
-                CommandLogger.info('Критерии: Результат записан в ' + saveString);
+                this.loggingService.process(CommandLogger, { level: 'info', message: `Критерии: Результат записан в ${saveString}` });
             } else {
                 console.log(service.getResult());
             }
         } catch (e) {
-            CommandLogger.error('Во время расчёта критериев произошла ошибка.' + '\n' + e.message);
+            this.loggingService.process(CommandLogger, { level: 'error', message: `Во время расчёта критериев произошла ошибка.\n${e.message}` });
             process.exit(1);
         }
     };

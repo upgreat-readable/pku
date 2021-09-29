@@ -1,10 +1,12 @@
 import { Command } from 'commander';
+
 import AbstractCommand from './interface/AbstractCommand';
 import { PsrService } from '../service/PsrService';
 import { FileCollection } from '../files/FileCollection';
 import CliException from '../exceptions/CliException';
 import { CommandLogger } from '../logger';
 import { PsrNominationService } from '../service/PsrNominationService';
+import LoggingService from '../service/LoggingService';
 
 // noinspection HtmlDeprecatedTag
 /**
@@ -12,6 +14,8 @@ import { PsrNominationService } from '../service/PsrNominationService';
  * Возвращает json расчет критериев из пакета критериев
  */
 class PSRCommand extends AbstractCommand {
+    private loggingService: LoggingService = new LoggingService();
+
     name: string = 'psr';
     description: string = 'Команда расчета метрик';
 
@@ -49,7 +53,10 @@ class PSRCommand extends AbstractCommand {
             //@ts-ignore
             console.log(server.getResult());
         } catch (e) {
-            CommandLogger.error('Во время расчёта метрик с помощью ПСР произошла ошибка.' + '\n' + e.message);
+            this.loggingService.process(CommandLogger, {
+                level: 'error',
+                message: `Во время расчёта метрик с помощью ПСР произошла ошибка.\n${e.message}`,
+            });
             process.exit(1);
         }
     };

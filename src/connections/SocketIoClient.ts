@@ -1,7 +1,9 @@
 import io from 'socket.io-client';
+
 import logger from '../logger';
 import { link, userToken } from '../config';
 import IPCServer from './IPCServer';
+import LoggingService from '../service/LoggingService';
 
 export class SocketIoClient {
     // @ts-ignore
@@ -60,7 +62,7 @@ export class SocketIoClient {
      */
     private handleRemoteEvents() {
         this.socket
-            .on('connect', () => logger.info('connected to web socket server'))
+            .on('connect', () => LoggingService.prototype.process(logger, { level: 'info', message: 'connected to web socket server' }))
             .on('disconnect', () => this.sendToClient('disconnect', 'error'))
 
             .on('connect_error', () => this.sendToClient('disconnect', 'error'))

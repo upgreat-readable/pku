@@ -1,13 +1,9 @@
+import RootIPC from 'node-ipc';
 import fs from 'fs';
+
 import { File } from '../files/File';
-import IPCClient from '../connections/IPCClient';
 import { IPCServer } from '../connections/IPCServer';
 import { blobSelections } from '../DemoSelectionExamples';
-import CliException from '../exceptions/CliException';
-import MessageData from '../types/Message';
-import Message from '../messages';
-import { CommandLogger } from '../logger';
-import RootIPC from 'node-ipc';
 import { IPCServerName, socketPath } from '../config';
 
 export class DemoMoveFileService {

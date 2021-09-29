@@ -1,10 +1,12 @@
 import RootIPC from 'node-ipc';
+import fs from 'fs';
+
 import { IPCServerLogger } from '../logger';
 import { socketPath } from '../config';
-import fs from 'fs';
 import SessionService from '../service/SessionService';
 import MessageData from '../types/Message';
 import Message from '../messages';
+import LoggingService from '../service/LoggingService';
 
 /**
  * Класс IPC сервера
@@ -50,7 +52,7 @@ export class IPCServer {
     // noinspection JSMethodCanBeStatic
     private configureIPCServer() {
         RootIPC.config.logger = function (message) {
-            IPCServerLogger.verbose(message);
+            LoggingService.prototype.process(IPCServerLogger, { level: 'verbose', message });
         };
     }
 
@@ -70,7 +72,7 @@ export class IPCServer {
         Message.fromDictionary(messageData).show();
 
         if (!this.lastSocket || !this.lastSocket.readable) {
-            IPCServerLogger.error('Пользователь не ожидает ответа. Пропущено.' + event);
+            LoggingService.prototype.process(IPCServerLogger, { level: 'error', message: `Пользователь не ожидает ответа. Пропущено. ${event}` });
             return;
         }
 

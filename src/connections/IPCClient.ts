@@ -1,16 +1,20 @@
 import RootIPC from 'node-ipc';
 import fs from 'fs';
+
 import CliException from '../exceptions/CliException';
 import { socketPath, IPCServerName, isDebug } from '../config';
 import { IPCClientLogger, CommandLogger } from '../logger';
 import MessageData from '../types/Message';
 import Message from '../messages';
+import LoggingService from '../service/LoggingService';
 
 /**
  * Класс клиента для подключения
  * к демонизированному процессу клиента Socket.IO соединения
  */
 class IPCClient {
+    private loggingService: LoggingService = new LoggingService();
+
     protected initialized = false;
 
     constructor() {
@@ -19,7 +23,7 @@ class IPCClient {
         }
 
         RootIPC.config.logger = function (message) {
-            IPCClientLogger.verbose(message);
+            LoggingService.prototype.process(IPCClientLogger, { level: 'verbose', message });
         };
     }
 
@@ -67,7 +71,7 @@ class IPCClient {
     }
 
     public log(message: string) {
-        IPCClientLogger.info(message);
+        this.loggingService.process(IPCClientLogger, { level: 'info', message });
     }
 
     /** Метод проверки наличия сокета */
@@ -109,12 +113,12 @@ class IPCClient {
         const message = 'Сокет IPCClient отключился ';
 
         if (eventType == 'disconnect') {
-            IPCClientLogger.info(message + eventType + ' %s', error || '');
+            this.loggingService.process(IPCClientLogger, { level: 'info', message: `${message} ${eventType} ${error || ''}` });
             process.exit(1);
         }
 
-        CommandLogger.error(message + eventType + ' %s', error || '');
-        IPCClientLogger.error(message + eventType + ' %s', error || '');
+        this.loggingService.process(CommandLogger, { level: 'error', message: `${message} ${eventType} ${error || ''}` });
+        this.loggingService.process(IPCClientLogger, { level: 'error', message: `${message} ${eventType} ${error || ''}` });
 
         process.exit(1);
     }

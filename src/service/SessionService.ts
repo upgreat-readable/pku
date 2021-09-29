@@ -1,12 +1,15 @@
+import fs from 'fs';
+
 import SIClient, { SocketIoClient } from '../connections/SocketIoClient';
 import IPCServer from '../connections/IPCServer';
 import logger from '../logger';
-import fs from 'fs';
-import { File } from '../files/File';
 import { DemoMoveFileService } from './DemoMoveFileService';
+import LoggingService from './LoggingService';
 import LogPersistenceService from './LogPersistenceService';
 
 class SessionService {
+    private loggingService: LoggingService = new LoggingService();
+
     demoMode: boolean = false;
     client: SocketIoClient;
     id: number | false = false;
@@ -22,7 +25,7 @@ class SessionService {
         this.demoMode = false;
         if (this.options.demo) {
             this.demoMode = true;
-            logger.info('Сессия стартовала в DEMO-режиме');
+            this.loggingService.process(logger, { level: 'info', message: 'Сессия стартовала в DEMO-режиме' });
         }
 
         this.connect();
@@ -45,7 +48,7 @@ class SessionService {
 
     sendFile(data: any) {
         this.connect();
-        logger.debug('socketIo client=>server: session-file-send');
+        this.loggingService.process(logger, { level: 'debug', message: 'socketIo client=>server: session-file-send' });
         this.client.send('session-file-send', {
             sessionId: this.id,
             fileId: data.fileId,
@@ -69,7 +72,7 @@ class SessionService {
         try {
             fs.writeFileSync('files/in/' + data.fileId + '.json', JSON.stringify(data.content));
         } catch (e) {
-            logger.error('файл ' + data.fileId + ' не был сохранен с ошибкой' + e.message);
+            this.loggingService.process(logger, { level: 'error', message: `файл ${data.fileId} не был сохранен с ошибкой ${e.message}` });
         }
     }
 
@@ -87,7 +90,10 @@ class SessionService {
                 server.moveAction();
             }
         } catch (e) {
-            logger.error('DEMO-режим - файл ' + data.fileId + ' не был сохранен с ошибкой' + e.message);
+            this.loggingService.process(logger, {
+                level: 'error',
+                message: `DEMO-режим - файл ${data.fileId} не был сохранен с ошибкой ${e.message}`,
+            });
         }
     }
 
@@ -129,7 +135,7 @@ class SessionService {
 
             // SERVER SENT FILE
             .on('session-file-available', (data: any) => {
-                logger.info(`Стал доступен файл ${data.fileId} в сессии `);
+                this.loggingService.process(logger, { level: 'info', message: `Стал доступен файл ${data.fileId} в сессии` });
 
                 if (this.demoMode) {
                     this.saveFileInDemoMode(data);
