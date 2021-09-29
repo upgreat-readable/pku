@@ -3,18 +3,15 @@ import fs from 'fs';
 
 import AbstractCommand from './interface/AbstractCommand';
 import CriteriaService from '../service/CriteriaService';
-import CliException from '../exceptions/CliException';
 import { FileCollection } from '../files/FileCollection';
-import { CommandLogger } from '../logger';
-import LoggingService from '../service/LoggingService';
+import { CommandLocalLogger } from '../logger';
+import CliLocalException from '../exceptions/CliLocalException';
 
 /**
  * Команда критериев
  * Возвращает json расчет критериев из пакета критериев
  */
 class CriteriaCommand extends AbstractCommand {
-    private loggingService: LoggingService = new LoggingService();
-
     name: string = 'criteria';
     description: string = 'Команда расчета критериев';
 
@@ -45,10 +42,7 @@ class CriteriaCommand extends AbstractCommand {
 
             if (!saveString) {
                 saveString = 'files/custom/temp.json';
-                this.loggingService.process(CommandLogger, {
-                    level: 'error',
-                    message: 'Не удалось отрезолвить путь к файлу. Результат последнего расчёта будет сохранен в files/custom/temp.json',
-                });
+                CommandLocalLogger.error('Не удалось отрезолвить путь к файлу. Результат последнего расчёта будет сохранен в files/custom/temp.json');
             }
 
             const service = new CriteriaService(fileJsonContent);
@@ -58,24 +52,24 @@ class CriteriaCommand extends AbstractCommand {
                 fileJsonContent.criteria = JSON.parse(service.getResult());
                 fs.writeFileSync(saveString, JSON.stringify(fileJsonContent));
 
-                this.loggingService.process(CommandLogger, { level: 'info', message: `Критерии: Результат записан в ${saveString}` });
+                CommandLocalLogger.info(`Критерии: Результат записан в ${saveString}`);
             } else {
                 console.log(service.getResult());
             }
         } catch (e) {
-            this.loggingService.process(CommandLogger, { level: 'error', message: `Во время расчёта критериев произошла ошибка.\n${e.message}` });
+            CommandLocalLogger.error(`Во время расчёта критериев произошла ошибка.\n${e.message}`);
             process.exit(1);
         }
     };
 
     protected validateOptions(options: FileOptions) {
         if (!options.fileId && !options.filePath) {
-            throw new CliException('Обязательные параметры не были заполнены.');
+            throw new CliLocalException('Обязательные параметры не были заполнены.');
 
             // @ts-ignore
             const fileId = parseInt(options.fileId);
             if (fileId <= 0 || isNaN(fileId)) {
-                throw new CliException('параметр fileId должен быть числом');
+                throw new CliLocalException('параметр fileId должен быть числом');
             }
         }
     }

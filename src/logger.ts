@@ -13,6 +13,14 @@ if (logFormat === 'pretty') {
 
 const persistenceFormat = format.combine(format.timestamp(), format.json());
 
+export const CommandLocalLogger = winston.createLogger({
+    level: 'verbose',
+    transports: [
+        new winston.transports.Console({ format: consoleFormat }),
+        new winston.transports.File({ filename: 'logs/command.log', format: fileFormat }),
+    ],
+});
+
 export const CommandLogger = winston.createLogger({
     level: 'verbose',
     transports: [

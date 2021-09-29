@@ -3,10 +3,9 @@ import { Command } from 'commander';
 import AbstractCommand from './interface/AbstractCommand';
 import { PsrService } from '../service/PsrService';
 import { FileCollection } from '../files/FileCollection';
-import CliException from '../exceptions/CliException';
-import { CommandLogger } from '../logger';
+import { CommandLocalLogger } from '../logger';
 import { PsrNominationService } from '../service/PsrNominationService';
-import LoggingService from '../service/LoggingService';
+import CliLocalException from '../exceptions/CliLocalException';
 
 // noinspection HtmlDeprecatedTag
 /**
@@ -14,8 +13,6 @@ import LoggingService from '../service/LoggingService';
  * Возвращает json расчет критериев из пакета критериев
  */
 class PSRCommand extends AbstractCommand {
-    private loggingService: LoggingService = new LoggingService();
-
     name: string = 'psr';
     description: string = 'Команда расчета метрик';
 
@@ -47,29 +44,26 @@ class PSRCommand extends AbstractCommand {
             } else if (mode === 'nomination') {
                 server = new PsrNominationService(fileCollection);
             } else {
-                throw new CliException('Модификация доступна только normal или nomination.');
+                throw new CliLocalException('Модификация доступна только normal или nomination.');
             }
 
             //@ts-ignore
             console.log(server.getResult());
         } catch (e) {
-            this.loggingService.process(CommandLogger, {
-                level: 'error',
-                message: `Во время расчёта метрик с помощью ПСР произошла ошибка.\n${e.message}`,
-            });
+            CommandLocalLogger.error(`Во время расчёта метрик с помощью ПСР произошла ошибка.\n${e.message}`);
             process.exit(1);
         }
     };
 
     protected validateOptions(options: FileOptions) {
         if (!options.fileId && !options.filePath) {
-            throw new CliException('Обязательные параметры не были заполнены.');
+            throw new CliLocalException('Обязательные параметры не были заполнены.');
 
             if (options.fileId) {
                 //@ts-ignore
                 options.fileId.forEach((value, index, array) => {
                     if (value <= 0 || isNaN(value)) {
-                        throw new CliException('параметры fileId должны быть числами');
+                        throw new CliLocalException('параметры fileId должны быть числами');
                     }
                 });
             }
