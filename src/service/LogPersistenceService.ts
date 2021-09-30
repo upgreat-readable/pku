@@ -10,7 +10,8 @@ class LogPersistenceService {
             .toString()
             .split('\n')
             .filter(Boolean)
-            .map(line => JSON.parse(line))
+            .map(LogPersistenceService.parseLine)
+            .filter(entry => entry.timestamp)
             .filter(entry => new Date(entry.timestamp) > from);
     }
 
@@ -20,12 +21,21 @@ class LogPersistenceService {
             .toString()
             .split('\n')
             .filter(Boolean)
-            .map(line => JSON.parse(line))
+            .map(LogPersistenceService.parseLine)
+            .filter(entry => entry.timestamp)
             .filter(entry => new Date(entry.timestamp) > to)
             .map(entry => JSON.stringify(entry))
             .join('\n');
 
         fs.writeFileSync(logPersistencePath, dataToKeep);
+    }
+
+    private static parseLine(line: string): any {
+        try {
+            return JSON.parse(line);
+        } catch (e) {
+            return {};
+        }
     }
 }
 
