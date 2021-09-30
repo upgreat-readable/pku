@@ -1,7 +1,7 @@
 import { LogEntry } from 'winston';
 import fs from 'fs';
 
-import { logPersistencePath, userToken } from '../config';
+import { logPersistencePath } from '../config';
 
 class LogPersistenceService {
     public async getEntries(from: Date): Promise<Array<LogEntry>> {
@@ -12,8 +12,7 @@ class LogPersistenceService {
             .filter(Boolean)
             .map(LogPersistenceService.parseLine)
             .filter(entry => entry.timestamp)
-            .filter(entry => new Date(entry.timestamp) > from)
-            .map(entry => ({ ...entry, token: userToken }));
+            .filter(entry => new Date(entry.timestamp) > from);
     }
 
     public async trimLog(to: Date): Promise<void> {
