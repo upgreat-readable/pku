@@ -1,6 +1,7 @@
 import { LogEntry, Logger } from 'winston';
 
 import SIClient, { SocketIoClient } from '../connections/SocketIoClient';
+import { userToken } from '../config';
 
 class LoggingService {
     client: SocketIoClient;
@@ -13,7 +14,7 @@ class LoggingService {
         logger.log(info);
 
         if (this.client && this.client.isConnect()) {
-            this.client.send('logs-entry', { ...info, timestamp: new Date().toISOString() });
+            this.client.send('logs-entry', { ...info, token: userToken, timestamp: new Date().toISOString() });
         }
     }
 }
