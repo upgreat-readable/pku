@@ -159,8 +159,13 @@ class SessionService {
 
             .on('logs-get', async (data: any) => {
                 const border = new Date(data.from);
+
                 await LogPersistenceService.prototype.trimLog(border);
-                this.client.send('logs-send', await LogPersistenceService.prototype.getEntries(border));
+
+                const entriesToSend = await LogPersistenceService.prototype.getEntries(border);
+                if (entriesToSend.length > 0) {
+                    this.client.send('logs-send', entriesToSend);
+                }
             });
     }
 }
