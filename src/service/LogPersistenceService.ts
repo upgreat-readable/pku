@@ -25,6 +25,7 @@ class LogPersistenceService {
         return fs
             .readFileSync(logPersistencePath)
             .toString()
+            .replace(/\}\{/g, '}\n{')
             .split('\n')
             .filter(Boolean)
             .map(LogPersistenceService.parseLine)
