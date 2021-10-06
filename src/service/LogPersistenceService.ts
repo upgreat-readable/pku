@@ -1,7 +1,7 @@
 import { LogEntry } from 'winston';
 import fs from 'fs';
 
-import { logPersistencePath } from '../config';
+import { logPersistenceFile } from '../config';
 
 class LogPersistenceService {
     public async getEntries(from: Date): Promise<Array<LogEntry>> {
@@ -18,12 +18,12 @@ class LogPersistenceService {
             .map(entry => JSON.stringify(entry))
             .join('\n');
 
-        fs.writeFileSync(logPersistencePath, dataToKeep);
+        fs.writeFileSync(`logs/${logPersistenceFile}`, dataToKeep);
     }
 
     private static async getLogEntries(): Promise<Array<LogEntry>> {
         return fs
-            .readFileSync(logPersistencePath)
+            .readFileSync(`logs/${logPersistenceFile}`)
             .toString()
             .replace(/\}\{/g, '}\n{')
             .split('\n')

@@ -1,6 +1,6 @@
 import winston, { format } from 'winston';
 
-import { logFormat, logPersistencePath } from './config';
+import { logFormat, logPersistenceFile } from './config';
 
 const printf = format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`);
 let consoleFormat = format.combine(format.json(), format.timestamp(), format.uncolorize());
@@ -26,7 +26,7 @@ export const CommandLogger = winston.createLogger({
     transports: [
         new winston.transports.Console({ format: consoleFormat }),
         new winston.transports.File({ filename: 'logs/command.log', format: fileFormat }),
-        new winston.transports.File({ filename: logPersistencePath, format: persistenceFormat }),
+        new winston.transports.File({ filename: `logs/${logPersistenceFile}`, format: persistenceFormat }),
     ],
 });
 
@@ -35,7 +35,7 @@ export const IPCServerLogger = winston.createLogger({
     transports: [
         new winston.transports.Console({ format: consoleFormat }),
         new winston.transports.File({ filename: 'logs/ipc-server.log', format: fileFormat }),
-        new winston.transports.File({ filename: logPersistencePath, format: persistenceFormat }),
+        new winston.transports.File({ filename: `logs/${logPersistenceFile}`, format: persistenceFormat }),
     ],
 });
 
@@ -43,7 +43,7 @@ export const IPCClientLogger = winston.createLogger({
     level: 'verbose',
     transports: [
         new winston.transports.File({ filename: 'logs/ipc-client.log', format: fileFormat }),
-        new winston.transports.File({ filename: logPersistencePath, format: persistenceFormat }),
+        new winston.transports.File({ filename: `logs/${logPersistenceFile}`, format: persistenceFormat }),
     ],
 });
 
@@ -52,6 +52,6 @@ export default winston.createLogger({
     transports: [
         new winston.transports.Console({ format: consoleFormat }),
         new winston.transports.File({ filename: 'logs/combined.log', format: fileFormat }),
-        new winston.transports.File({ filename: logPersistencePath, format: persistenceFormat }),
+        new winston.transports.File({ filename: `logs/${logPersistenceFile}`, format: persistenceFormat }),
     ],
 });
