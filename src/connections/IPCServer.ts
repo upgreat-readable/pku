@@ -7,6 +7,7 @@ import SessionService from '../service/SessionService';
 import MessageData from '../types/Message';
 import Message from '../messages';
 import LoggingService from '../service/LoggingService';
+import { LogEntry } from 'winston';
 
 /**
  * Класс IPC сервера
@@ -72,7 +73,11 @@ export class IPCServer {
         Message.fromDictionary(messageData).show();
 
         if (!this.lastSocket || !this.lastSocket.readable) {
-            LoggingService.prototype.process(IPCServerLogger, { level: 'error', message: `Пользователь не ожидает ответа. Пропущено. ${event}` });
+            const info: LogEntry = { level: 'error', message: `Пользователь не ожидает ответа. Пропущено. ${event}` };
+            if (this.session) {
+                info.sessionId = this.session.id;
+            }
+            LoggingService.prototype.process(IPCServerLogger, info);
             return;
         }
 
