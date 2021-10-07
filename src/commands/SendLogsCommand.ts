@@ -54,6 +54,10 @@ class SendLogsCommand extends AbstractCommand {
 
                     resolve();
                     client.disconnect();
+
+                    if (messageData.message === 'message.logs.success') {
+                        process.exit(0);
+                    }
                 });
 
                 client.sendMessage(IPCServer.sendLogsEvent, {
