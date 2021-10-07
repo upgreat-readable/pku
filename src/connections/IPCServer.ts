@@ -1,5 +1,6 @@
 import RootIPC from 'node-ipc';
 import fs from 'fs';
+import { LogEntry } from 'winston';
 
 import { IPCServerLogger } from '../logger';
 import { socketPath } from '../config';
@@ -7,7 +8,6 @@ import SessionService from '../service/SessionService';
 import MessageData from '../types/Message';
 import Message from '../messages';
 import LoggingService from '../service/LoggingService';
-import { LogEntry } from 'winston';
 
 /**
  * Класс IPC сервера
@@ -22,9 +22,14 @@ export class IPCServer {
      * То они должны соответствовать названиями методов SessionService
      */
     static readonly sessionStartEvent = 'ipc.start';
+
     static readonly sessionStopEvent = 'ipc.stop';
+
     static readonly sendFileEvent = 'ipc.sendFile';
+
     static readonly sessionReconnectEvent = 'ipc.reconnect';
+
+    static readonly sendLogsEvent = 'ipc.sendLogs';
 
     /** Последнее подключение клиента-сокета */
     lastSocket: any;
@@ -85,13 +90,14 @@ export class IPCServer {
     }
 
     private handleEvents() {
-        const { sendFileEvent, sessionStartEvent, sessionStopEvent, sessionReconnectEvent } = IPCServer;
+        const { sendFileEvent, sessionStartEvent, sessionStopEvent, sessionReconnectEvent, sendLogsEvent } = IPCServer;
 
         this.getCurrent()
             .on(sendFileEvent, (data, socket) => this.transferEventToSession(sendFileEvent, data, socket))
             .on(sessionStartEvent, (data, socket) => this.transferEventToSession(sessionStartEvent, data, socket))
             .on(sessionStopEvent, (data, socket) => this.transferEventToSession(sessionStopEvent, data, socket))
-            .on(sessionReconnectEvent, (data, socket) => this.transferEventToSession(sessionReconnectEvent, data, socket));
+            .on(sessionReconnectEvent, (data, socket) => this.transferEventToSession(sessionReconnectEvent, data, socket))
+            .on(sendLogsEvent, (data, socket) => this.transferEventToSession(sendLogsEvent, data, socket));
     }
 
     /**

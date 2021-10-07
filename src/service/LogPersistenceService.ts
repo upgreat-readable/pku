@@ -5,13 +5,13 @@ import { logPersistenceFile } from '../config';
 
 class LogPersistenceService {
     public async getEntries(from: Date): Promise<Array<LogEntry>> {
-        const logEntries = await LogPersistenceService.getLogEntries();
+        const logEntries = LogPersistenceService.getLogEntries();
 
         return logEntries.filter(entry => new Date(entry.timestamp) > from);
     }
 
     public async trimLog(to: Date): Promise<void> {
-        const logEntries = await LogPersistenceService.getLogEntries();
+        const logEntries = LogPersistenceService.getLogEntries();
 
         const dataToKeep = logEntries
             .filter(entry => new Date(entry.timestamp) > to)
@@ -21,9 +21,14 @@ class LogPersistenceService {
         fs.writeFileSync(`logs/${logPersistenceFile}`, dataToKeep);
     }
 
-    private static async getLogEntries(): Promise<Array<LogEntry>> {
+    public static getLogEntries(sessionId: number | null = null): Array<LogEntry> {
+        let path = `logs/${logPersistenceFile}`;
+        if (sessionId !== null) {
+            path = `logs/sessions/${sessionId}/${logPersistenceFile}`;
+        }
+
         return fs
-            .readFileSync(`logs/${logPersistenceFile}`)
+            .readFileSync(path)
             .toString()
             .replace(/\}\{/g, '}\n{')
             .split('\n')

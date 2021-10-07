@@ -11,6 +11,10 @@ export default {
     'message.stop.error': 'Ошибка завершения сессии',
     'message.stop.empty': 'Сессия не может быть прервана т.к. не запущена в данном контейнере. Запустите сессию командой start или reconnect.',
 
+    'message.logs.not-found': 'Не найдены логи для отправки на сервер',
+    'message.logs.success': 'Логи были отправлены',
+    'message.logs.error': 'Логи не были отправлены',
+
     // Сетевые сообщения
     'message.socket-io.disconnect': 'network: disconnect',
 

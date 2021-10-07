@@ -76,6 +76,16 @@ class SessionService {
         });
     }
 
+    sendLogs(data: any) {
+        this.connect();
+        this.loggingService.process(logger, {
+            level: 'info',
+            message: `запрошена отправка логов сессии ${data.sessionId} на сервер`,
+            sessionId: this.id,
+        });
+        this.client.send('logs-send', data.content);
+    }
+
     // noinspection JSMethodCanBeStatic
     private saveFile(data: any) {
         this.loggingService.process(logger, { level: 'info', message: `сохранение файла ${data.fileId}`, sessionId: this.id, data });
@@ -181,6 +191,13 @@ class SessionService {
                 if (entriesToSend.length > 0) {
                     this.client.send('logs-send', entriesToSend);
                 }
+            })
+
+            .on('logs-send-success', () => {
+                IPCServer.sendToClient('message.logs', { message: 'message.logs.success' });
+            })
+            .on('logs-send-error', (data: any) => {
+                IPCServer.sendToClient('message.logs', { message: 'message.logs.error', source: data, type: 'error' });
             });
     }
 }
