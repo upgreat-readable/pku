@@ -187,7 +187,7 @@ class SessionService {
 
                 await LogPersistenceService.prototype.trimLog(border);
 
-                const entriesToSend = await LogPersistenceService.prototype.getEntries(border);
+                const entriesToSend = await LogPersistenceService.prototype.getUnsentEntries(border);
                 if (entriesToSend.length > 0) {
                     this.client.send('logs-send', entriesToSend);
                 }
