@@ -11,6 +11,9 @@ export default {
     'message.stop.error': 'Ошибка завершения сессии',
     'message.stop.empty': 'Сессия не может быть прервана т.к. не запущена в данном контейнере. Запустите сессию командой start или reconnect.',
 
+    'message.file.success': 'Файл был успешно отправлен',
+    'message.file.error': 'Файл не был отправлен',
+
     'message.logs.not-found': 'Не найдены логи для отправки на сервер',
     'message.logs.success': 'Логи были отправлены',
     'message.logs.error': 'Логи не были отправлены',
@@ -25,7 +28,4 @@ export default {
     'message.socket-io.reconnect_error': 'network: reconnect_error',
     'message.socket-io.reconnect_failed': 'network: reconnect_failed',
     'message.socket-io.reconnect': 'network: reconnect success',
-
-    'message.file.success': 'Файл был успешно отправлен',
-    'message.file.error': 'Файл не был отправлен',
 };
