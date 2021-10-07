@@ -6,8 +6,6 @@ import LoggingService from './LoggingService';
 
 // noinspection JSUnfilteredForInLoop
 export class GetNextFileService {
-    private loggingService: LoggingService = new LoggingService();
-
     protected lastFileName: any;
 
     goSignal() {
@@ -21,7 +19,7 @@ export class GetNextFileService {
                 return 'Последний полученный файл не был найден.';
             }
         } catch (e) {
-            this.loggingService.process(logger, { level: 'error', message: e.message, trace: e.trace, group: 'file' });
+            LoggingService.process(logger, { level: 'error', message: e.message, trace: e.trace, group: 'file' });
             return 'Во время получения файла произошла ошибка';
         }
     }

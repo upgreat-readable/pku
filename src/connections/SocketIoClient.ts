@@ -63,7 +63,7 @@ export class SocketIoClient {
     private handleRemoteEvents() {
         this.socket
             .on('connect', () =>
-                LoggingService.prototype.process(logger, {
+                LoggingService.process(logger, {
                     level: 'info',
                     message: 'установлено подключение к сокету удалённого сервера',
                     group: 'socket.io',
@@ -79,9 +79,7 @@ export class SocketIoClient {
             .on('reconnect_failed', () => this.sendToClient('reconnect_failed', 'error'))
             .on('reconnect', () => this.sendToClient('reconnect'))
 
-            .on('error', (error: Object) =>
-                LoggingService.prototype.process(logger, { level: 'error', message: error.toString(), error, group: 'socket.io' })
-            );
+            .on('error', (error: Object) => LoggingService.process(logger, { level: 'error', message: error.toString(), error, group: 'socket.io' }));
     }
 
     // noinspection JSMethodCanBeStatic

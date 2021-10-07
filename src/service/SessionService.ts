@@ -8,8 +8,6 @@ import LoggingService from './LoggingService';
 import LogPersistenceService from './LogPersistenceService';
 
 class SessionService {
-    private loggingService: LoggingService = new LoggingService();
-
     demoMode: boolean = false;
     client: SocketIoClient;
     id: number | false = false;
@@ -20,13 +18,13 @@ class SessionService {
     }
 
     start(options: StartCommandOptions) {
-        this.loggingService.process(logger, { level: 'info', message: 'запрошен старт новой сессии', sessionId: this.id, group: 'session-start' });
+        LoggingService.process(logger, { level: 'info', message: 'запрошен старт новой сессии', sessionId: this.id, group: 'session-start' });
         this.options = options;
 
         this.demoMode = false;
         if (this.options.demo) {
             this.demoMode = true;
-            this.loggingService.process(logger, {
+            LoggingService.process(logger, {
                 level: 'info',
                 message: 'Сессия стартует в DEMO-режиме',
                 sessionId: this.id,
@@ -48,14 +46,14 @@ class SessionService {
     }
 
     stop() {
-        this.loggingService.process(logger, { level: 'info', message: 'запрошена остановка сессии', sessionId: this.id, group: 'session-stop' });
+        LoggingService.process(logger, { level: 'info', message: 'запрошена остановка сессии', sessionId: this.id, group: 'session-stop' });
         this.connect();
         this.client.send('session-client-abort', { sessionId: this.id });
     }
 
     sendFile(data: any) {
         this.connect();
-        this.loggingService.process(logger, {
+        LoggingService.process(logger, {
             level: 'debug',
             message: `запрошена отправка файла ${data.fileId} на сервер`,
             sessionId: this.id,
@@ -70,7 +68,7 @@ class SessionService {
     }
 
     reconnect() {
-        this.loggingService.process(logger, {
+        LoggingService.process(logger, {
             level: 'info',
             message: 'запрошено восстановление подключения к сессии',
             sessionId: this.id,
@@ -81,7 +79,7 @@ class SessionService {
     }
 
     connect() {
-        this.loggingService.process(logger, { level: 'info', message: 'подключение', sessionId: this.id, group: 'session-start' });
+        LoggingService.process(logger, { level: 'info', message: 'подключение', sessionId: this.id, group: 'session-start' });
         this.client.connect(() => {
             this.subscribe();
         });
@@ -89,7 +87,7 @@ class SessionService {
 
     sendLogs(data: any) {
         this.connect();
-        this.loggingService.process(logger, {
+        LoggingService.process(logger, {
             level: 'info',
             message: `запрошена отправка логов сессии ${data.sessionId} на сервер`,
             sessionId: this.id,
@@ -100,11 +98,11 @@ class SessionService {
 
     // noinspection JSMethodCanBeStatic
     private saveFile(data: any) {
-        this.loggingService.process(logger, { level: 'info', message: `сохранение файла ${data.fileId}`, sessionId: this.id, data, group: 'file' });
+        LoggingService.process(logger, { level: 'info', message: `сохранение файла ${data.fileId}`, sessionId: this.id, data, group: 'file' });
         try {
             fs.writeFileSync('files/in/' + data.fileId + '.json', JSON.stringify(data.content));
         } catch (e) {
-            this.loggingService.process(logger, {
+            LoggingService.process(logger, {
                 level: 'error',
                 message: `файл ${data.fileId} не был сохранен с ошибкой ${e.message}`,
                 sessionId: this.id,
@@ -119,7 +117,7 @@ class SessionService {
      * @private
      */
     private saveFileInDemoMode(data: any) {
-        this.loggingService.process(logger, {
+        LoggingService.process(logger, {
             level: 'info',
             message: `DEMO-режим - сохранение файла ${data.fileId}`,
             sessionId: this.id,
@@ -134,7 +132,7 @@ class SessionService {
                 server.moveAction();
             }
         } catch (e) {
-            this.loggingService.process(logger, {
+            LoggingService.process(logger, {
                 level: 'error',
                 message: `DEMO-режим - файл ${data.fileId} не был сохранен с ошибкой ${e.message}`,
                 sessionId: this.id,
@@ -181,7 +179,7 @@ class SessionService {
 
             // SERVER SENT FILE
             .on('session-file-available', (data: any) => {
-                this.loggingService.process(logger, {
+                LoggingService.process(logger, {
                     level: 'info',
                     message: `Стал доступен файл ${data.fileId} в сессии`,
                     sessionId: this.id,

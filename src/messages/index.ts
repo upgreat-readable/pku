@@ -16,8 +16,6 @@ const dictionary = { ...messagesConsole };
  * ищет в справочнике
  */
 class Message implements MessageData {
-    private loggingService: LoggingService = new LoggingService();
-
     type: string = 'info';
     message: string;
     source: any;
@@ -47,11 +45,11 @@ class Message implements MessageData {
 
     public show() {
         if (this.source) {
-            this.loggingService.process(this.logger, { level: this.type, message: `${this.message} ${JSON.stringify(this.source)}`, group: 'IPC' });
+            LoggingService.process(this.logger, { level: this.type, message: `${this.message} ${JSON.stringify(this.source)}`, group: 'IPC' });
             return;
         }
 
-        this.loggingService.process(this.logger, { level: this.type, message: this.message, group: 'IPC' });
+        LoggingService.process(this.logger, { level: this.type, message: this.message, group: 'IPC' });
     }
 
     public setLogger(logger: Logger) {

@@ -33,4 +33,4 @@ class LoggingService {
     }
 }
 
-export default LoggingService;
+export default new LoggingService();

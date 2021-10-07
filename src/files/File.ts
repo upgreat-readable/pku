@@ -4,8 +4,6 @@ import logger from '../logger';
 import LoggingService from '../service/LoggingService';
 
 export class File {
-    private loggingService: LoggingService = new LoggingService();
-
     public id?: string | number | Array<string>;
     public path?: string;
     public dir?: string;
@@ -41,7 +39,7 @@ export class File {
                     fs.readFileSync(this.path.toString(), 'utf8')
                 );
         } catch (e) {
-            this.loggingService.process(logger, { level: 'error', message: e.message, group: 'file' });
+            LoggingService.process(logger, { level: 'error', message: e.message, group: 'file' });
         }
     }
 
@@ -63,7 +61,7 @@ export class File {
                 fs.writeFileSync(this.path.toString(), JSON.stringify(this.jsonFileContent));
             }
         } catch (e) {
-            this.loggingService.process(logger, { level: 'error', message: `файл ${this.id} не был сохранен с ошибкой ${e.message}`, group: 'file' });
+            LoggingService.process(logger, { level: 'error', message: `файл ${this.id} не был сохранен с ошибкой ${e.message}`, group: 'file' });
         }
     }
 }

@@ -13,8 +13,6 @@ import LoggingService from '../service/LoggingService';
  * к демонизированному процессу клиента Socket.IO соединения
  */
 class IPCClient {
-    private loggingService: LoggingService = new LoggingService();
-
     protected initialized = false;
 
     constructor() {
@@ -23,7 +21,7 @@ class IPCClient {
         }
 
         RootIPC.config.logger = function (message) {
-            LoggingService.prototype.process(IPCClientLogger, { level: 'verbose', message, group: 'IPC' });
+            LoggingService.process(IPCClientLogger, { level: 'verbose', message, group: 'IPC' });
         };
     }
 
@@ -71,7 +69,7 @@ class IPCClient {
     }
 
     public log(message: string) {
-        this.loggingService.process(IPCClientLogger, { level: 'info', message, group: 'IPC' });
+        LoggingService.process(IPCClientLogger, { level: 'info', message, group: 'IPC' });
     }
 
     /** Метод проверки наличия сокета */
@@ -113,12 +111,12 @@ class IPCClient {
         const message = 'Сокет IPCClient отключился ';
 
         if (eventType == 'disconnect') {
-            this.loggingService.process(IPCClientLogger, { level: 'info', message: `${message} ${eventType} ${error || ''}`, group: 'IPC' });
+            LoggingService.process(IPCClientLogger, { level: 'info', message: `${message} ${eventType} ${error || ''}`, group: 'IPC' });
             process.exit(1);
         }
 
-        this.loggingService.process(CommandLogger, { level: 'error', message: `${message} ${eventType} ${error || ''}`, group: 'IPC' });
-        this.loggingService.process(IPCClientLogger, { level: 'error', message: `${message} ${eventType} ${error || ''}`, group: 'IPC' });
+        LoggingService.process(CommandLogger, { level: 'error', message: `${message} ${eventType} ${error || ''}`, group: 'IPC' });
+        LoggingService.process(IPCClientLogger, { level: 'error', message: `${message} ${eventType} ${error || ''}`, group: 'IPC' });
 
         process.exit(1);
     }

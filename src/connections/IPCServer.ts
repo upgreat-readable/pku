@@ -58,7 +58,7 @@ export class IPCServer {
     // noinspection JSMethodCanBeStatic
     private configureIPCServer() {
         RootIPC.config.logger = function (message) {
-            LoggingService.prototype.process(IPCServerLogger, { level: 'verbose', message, group: 'IPC' });
+            LoggingService.process(IPCServerLogger, { level: 'verbose', message, group: 'IPC' });
         };
     }
 
@@ -82,7 +82,7 @@ export class IPCServer {
             if (this.session) {
                 info.sessionId = this.session.id;
             }
-            LoggingService.prototype.process(IPCServerLogger, info);
+            LoggingService.process(IPCServerLogger, info);
             return;
         }
 

@@ -9,8 +9,6 @@ import LoggingService from '../service/LoggingService';
  * Команда перемещения файла
  */
 class DemoMoveFileCommand extends AbstractCommand {
-    private loggingService: LoggingService = new LoggingService();
-
     name: string = 'demoMoveFile';
 
     description: string = 'Команда для теста обмена. Перемещает файл из in в out с добавлением разметки';
@@ -27,7 +25,7 @@ class DemoMoveFileCommand extends AbstractCommand {
             const server = new DemoMoveFileService(options);
             server.moveAction();
         } catch (e) {
-            this.loggingService.process(CommandLogger, {
+            LoggingService.process(CommandLogger, {
                 level: 'error',
                 message: `Во время отправки произошла ошибка.\n${e.message}`,
                 group: 'file',
