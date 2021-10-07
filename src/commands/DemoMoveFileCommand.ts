@@ -27,7 +27,11 @@ class DemoMoveFileCommand extends AbstractCommand {
             const server = new DemoMoveFileService(options);
             server.moveAction();
         } catch (e) {
-            this.loggingService.process(CommandLogger, { level: 'error', message: `Во время отправки произошла ошибка.\n${e.message}` });
+            this.loggingService.process(CommandLogger, {
+                level: 'error',
+                message: `Во время отправки произошла ошибка.\n${e.message}`,
+                group: 'file',
+            });
         }
     };
 }

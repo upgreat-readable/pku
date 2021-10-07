@@ -21,7 +21,7 @@ export class GetNextFileService {
                 return 'Последний полученный файл не был найден.';
             }
         } catch (e) {
-            this.loggingService.process(logger, { level: 'error', message: e.message, trace: e.trace });
+            this.loggingService.process(logger, { level: 'error', message: e.message, trace: e.trace, group: 'file' });
             return 'Во время получения файла произошла ошибка';
         }
     }

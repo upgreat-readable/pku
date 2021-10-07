@@ -23,7 +23,7 @@ class CliException extends Error {
     }
 
     protected static showMessage(message: string) {
-        LoggingService.prototype.process(logger, { level: 'error', message: `Ошибка: ${message}` });
+        LoggingService.prototype.process(logger, { level: 'error', message: `Ошибка: ${message}`, group: 'exceptions' });
     }
 }
 

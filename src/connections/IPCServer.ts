@@ -58,7 +58,7 @@ export class IPCServer {
     // noinspection JSMethodCanBeStatic
     private configureIPCServer() {
         RootIPC.config.logger = function (message) {
-            LoggingService.prototype.process(IPCServerLogger, { level: 'verbose', message });
+            LoggingService.prototype.process(IPCServerLogger, { level: 'verbose', message, group: 'IPC' });
         };
     }
 
@@ -78,7 +78,7 @@ export class IPCServer {
         Message.fromDictionary(messageData).show();
 
         if (!this.lastSocket || !this.lastSocket.readable) {
-            const info: LogEntry = { level: 'error', message: `Пользователь не ожидает ответа. Пропущено. ${event}` };
+            const info: LogEntry = { level: 'error', message: `Пользователь не ожидает ответа. Пропущено. ${event}`, group: 'IPC' };
             if (this.session) {
                 info.sessionId = this.session.id;
             }
