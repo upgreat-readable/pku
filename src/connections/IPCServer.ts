@@ -25,6 +25,8 @@ export class IPCServer {
 
     static readonly sessionStopEvent = 'ipc.stop';
 
+    static readonly repeatFileEvent = 'ipc.repeatFile';
+
     static readonly sendFileEvent = 'ipc.sendFile';
 
     static readonly sessionReconnectEvent = 'ipc.reconnect';
@@ -90,9 +92,10 @@ export class IPCServer {
     }
 
     private handleEvents() {
-        const { sendFileEvent, sessionStartEvent, sessionStopEvent, sessionReconnectEvent, sendLogsEvent } = IPCServer;
+        const { repeatFileEvent, sendFileEvent, sessionStartEvent, sessionStopEvent, sessionReconnectEvent, sendLogsEvent } = IPCServer;
 
         this.getCurrent()
+            .on(repeatFileEvent, (data, socket) => this.transferEventToSession(repeatFileEvent, data, socket))
             .on(sendFileEvent, (data, socket) => this.transferEventToSession(sendFileEvent, data, socket))
             .on(sessionStartEvent, (data, socket) => this.transferEventToSession(sessionStartEvent, data, socket))
             .on(sessionStopEvent, (data, socket) => this.transferEventToSession(sessionStopEvent, data, socket))

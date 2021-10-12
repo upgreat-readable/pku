@@ -11,6 +11,9 @@ export default {
     'message.stop.error': 'Ошибка завершения сессии',
     'message.stop.empty': 'Сессия не может быть прервана т.к. не запущена в данном контейнере. Запустите сессию командой start или reconnect.',
 
+    'message.file.repeat.success': 'Файл был получен повторно',
+    'message.file.repeat.error': 'Произошла ошибка повторного получения файла',
+
     'message.file.success': 'Файл был успешно отправлен',
     'message.file.error': 'Файл не был отправлен',
 
