@@ -98,7 +98,13 @@ class SessionService {
 
     // noinspection JSMethodCanBeStatic
     private saveFile(data: any) {
-        LoggingService.process(logger, { level: 'info', message: `сохранение файла ${data.fileId}`, sessionId: this.id, data, group: 'file' });
+        LoggingService.process(logger, {
+            level: 'info',
+            message: `сохранение файла ${data.fileId}`,
+            sessionId: this.id,
+            fileId: data.fileId,
+            group: 'file',
+        });
         try {
             fs.writeFileSync('files/in/' + data.fileId + '.json', JSON.stringify(data.content));
         } catch (e) {
@@ -121,7 +127,7 @@ class SessionService {
             level: 'info',
             message: `DEMO-режим - сохранение файла ${data.fileId}`,
             sessionId: this.id,
-            data,
+            fileId: data.fileId,
             group: 'file',
         });
         try {
@@ -183,7 +189,7 @@ class SessionService {
                     level: 'info',
                     message: `Стал доступен файл ${data.fileId} в сессии`,
                     sessionId: this.id,
-                    data,
+                    fileId: data.fileId,
                     group: 'file',
                 });
 
