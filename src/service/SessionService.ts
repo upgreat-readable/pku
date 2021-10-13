@@ -209,7 +209,7 @@ class SessionService {
                     level: 'info',
                     message: `Повторно получен файл ${data.fileId}`,
                     sessionId: this.id,
-                    data,
+                    fileId: data.fileId,
                     group: 'file',
                 });
 
