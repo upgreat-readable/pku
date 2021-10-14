@@ -1,3 +1,3 @@
 interface SendLogsCommandOptions {
-    sessionId: number;
+    date: string;
 }

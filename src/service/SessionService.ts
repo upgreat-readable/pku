@@ -207,17 +207,6 @@ class SessionService {
                 IPCServer.sendToClient('message.file', { message: 'message.file.error', source: data, type: 'error' });
             })
 
-            .on('logs-get', async (data: any) => {
-                const border = new Date(data.from);
-
-                await LogPersistenceService.prototype.trimLog(border);
-
-                const entriesToSend = await LogPersistenceService.prototype.getUnsentEntries(border);
-                if (entriesToSend.length > 0) {
-                    this.client.send('logs-send', entriesToSend);
-                }
-            })
-
             .on('logs-send-success', () => {
                 IPCServer.sendToClient('message.logs', { message: 'message.logs.success' });
             })
