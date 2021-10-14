@@ -54,7 +54,7 @@ class SessionService {
     sendFile(data: any) {
         this.connect();
         LoggingService.process(logger, {
-            level: 'debug',
+            level: 'verbose',
             message: `запрошена отправка файла ${data.fileId} на сервер`,
             sessionId: this.id,
             data,
