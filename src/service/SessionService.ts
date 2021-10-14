@@ -89,7 +89,7 @@ class SessionService {
         this.connect();
         LoggingService.process(logger, {
             level: 'info',
-            message: `запрошена отправка логов сессии ${data.sessionId} на сервер`,
+            message: `запрошена отправка логов за ${data.date} на сервер`,
             sessionId: this.id,
             group: 'logs',
         });
