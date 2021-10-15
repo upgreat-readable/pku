@@ -9,6 +9,7 @@ import DemoMoveFileCommand from '../commands/DemoMoveFileCommand';
 import GetNextFileCommand from '../commands/GetNextFileCommand';
 import GetFileListCommand from '../commands/GetFileListCommand';
 import ReconnectCommand from '../commands/ReconnectCommand';
+import SendLogsCommand from '../commands/SendLogsCommand';
 
 program.name('./pku').storeOptionsAsProperties(false).passCommandToAction(false);
 
@@ -22,6 +23,7 @@ commandList.push(new PSRCommand());
 commandList.push(new DemoMoveFileCommand());
 commandList.push(new GetNextFileCommand());
 commandList.push(new GetFileListCommand());
+commandList.push(new SendLogsCommand());
 
 // биндим
 commandList.forEach(command => {

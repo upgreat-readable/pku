@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
+
 import logger from '../logger';
+import LoggingService from './LoggingService';
 
 // noinspection JSUnfilteredForInLoop
 export class GetNextFileService {
@@ -17,7 +19,7 @@ export class GetNextFileService {
                 return 'Последний полученный файл не был найден.';
             }
         } catch (e) {
-            logger.error(e.message, e.trace);
+            LoggingService.process(logger, { level: 'error', message: e.message, trace: e.trace, group: 'file' });
             return 'Во время получения файла произошла ошибка';
         }
     }

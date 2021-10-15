@@ -1,5 +1,7 @@
 import fs from 'fs';
+
 import logger from '../logger';
+import LoggingService from '../service/LoggingService';
 
 export class File {
     public id?: string | number | Array<string>;
@@ -37,7 +39,7 @@ export class File {
                     fs.readFileSync(this.path.toString(), 'utf8')
                 );
         } catch (e) {
-            logger.error(e.message);
+            LoggingService.process(logger, { level: 'error', message: e.message, group: 'file' });
         }
     }
 
@@ -59,7 +61,7 @@ export class File {
                 fs.writeFileSync(this.path.toString(), JSON.stringify(this.jsonFileContent));
             }
         } catch (e) {
-            logger.error('файл ' + this.id + ' не был сохранен с ошибкой' + e.message);
+            LoggingService.process(logger, { level: 'error', message: `файл ${this.id} не был сохранен с ошибкой ${e.message}`, group: 'file' });
         }
     }
 }

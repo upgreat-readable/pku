@@ -2,8 +2,8 @@ import { Command } from 'commander';
 
 import AbstractCommand from './interface/AbstractCommand';
 import { DemoMoveFileService } from '../service/DemoMoveFileService';
-import { File } from '../files/File';
 import { CommandLogger } from '../logger';
+import LoggingService from '../service/LoggingService';
 
 /**
  * Команда перемещения файла
@@ -25,7 +25,11 @@ class DemoMoveFileCommand extends AbstractCommand {
             const server = new DemoMoveFileService(options);
             server.moveAction();
         } catch (e) {
-            CommandLogger.error(`Во время отправки произошла ошибка. \n${e.message}`);
+            LoggingService.process(CommandLogger, {
+                level: 'error',
+                message: `Во время отправки произошла ошибка.\n${e.message}`,
+                group: 'file',
+            });
         }
     };
 }

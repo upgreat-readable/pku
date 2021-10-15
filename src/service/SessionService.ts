@@ -1,9 +1,11 @@
+import fs from 'fs';
+
 import SIClient, { SocketIoClient } from '../connections/SocketIoClient';
 import IPCServer from '../connections/IPCServer';
 import logger from '../logger';
-import fs from 'fs';
-import { File } from '../files/File';
 import { DemoMoveFileService } from './DemoMoveFileService';
+import LoggingService from './LoggingService';
+import LogPersistenceService from './LogPersistenceService';
 
 class SessionService {
     demoMode: boolean = false;
@@ -16,12 +18,18 @@ class SessionService {
     }
 
     start(options: StartCommandOptions) {
+        LoggingService.process(logger, { level: 'info', message: 'запрошен старт новой сессии', sessionId: this.id, group: 'session-start' });
         this.options = options;
 
         this.demoMode = false;
         if (this.options.demo) {
             this.demoMode = true;
-            logger.info('Сессия стартовала в DEMO-режиме');
+            LoggingService.process(logger, {
+                level: 'info',
+                message: 'Сессия стартует в DEMO-режиме',
+                sessionId: this.id,
+                group: 'session-start',
+            });
         }
 
         this.connect();
@@ -38,13 +46,20 @@ class SessionService {
     }
 
     stop() {
+        LoggingService.process(logger, { level: 'info', message: 'запрошена остановка сессии', sessionId: this.id, group: 'session-stop' });
         this.connect();
         this.client.send('session-client-abort', { sessionId: this.id });
     }
 
     sendFile(data: any) {
         this.connect();
-        logger.debug('socketIo client=>server: session-file-send');
+        LoggingService.process(logger, {
+            level: 'debug',
+            message: `запрошена отправка файла ${data.fileId} на сервер`,
+            sessionId: this.id,
+            data,
+            group: 'file',
+        });
         this.client.send('session-file-send', {
             sessionId: this.id,
             fileId: data.fileId,
@@ -53,22 +68,46 @@ class SessionService {
     }
 
     reconnect() {
+        LoggingService.process(logger, {
+            level: 'info',
+            message: 'запрошено восстановление подключения к сессии',
+            sessionId: this.id,
+            group: 'session-reconnect',
+        });
         this.connect();
         this.client.send('session-reconnect');
     }
 
     connect() {
+        LoggingService.process(logger, { level: 'info', message: 'подключение', sessionId: this.id, group: 'session-start' });
         this.client.connect(() => {
             this.subscribe();
         });
     }
 
+    sendLogs(data: any) {
+        this.connect();
+        LoggingService.process(logger, {
+            level: 'info',
+            message: `запрошена отправка логов сессии ${data.sessionId} на сервер`,
+            sessionId: this.id,
+            group: 'logs',
+        });
+        this.client.send('logs-send', data.content);
+    }
+
     // noinspection JSMethodCanBeStatic
     private saveFile(data: any) {
+        LoggingService.process(logger, { level: 'info', message: `сохранение файла ${data.fileId}`, sessionId: this.id, data, group: 'file' });
         try {
             fs.writeFileSync('files/in/' + data.fileId + '.json', JSON.stringify(data.content));
         } catch (e) {
-            logger.error('файл ' + data.fileId + ' не был сохранен с ошибкой' + e.message);
+            LoggingService.process(logger, {
+                level: 'error',
+                message: `файл ${data.fileId} не был сохранен с ошибкой ${e.message}`,
+                sessionId: this.id,
+                group: 'file',
+            });
         }
     }
 
@@ -78,6 +117,13 @@ class SessionService {
      * @private
      */
     private saveFileInDemoMode(data: any) {
+        LoggingService.process(logger, {
+            level: 'info',
+            message: `DEMO-режим - сохранение файла ${data.fileId}`,
+            sessionId: this.id,
+            data,
+            group: 'file',
+        });
         try {
             this.saveFile(data);
             if (this.demoMode) {
@@ -86,7 +132,12 @@ class SessionService {
                 server.moveAction();
             }
         } catch (e) {
-            logger.error('DEMO-режим - файл ' + data.fileId + ' не был сохранен с ошибкой' + e.message);
+            LoggingService.process(logger, {
+                level: 'error',
+                message: `DEMO-режим - файл ${data.fileId} не был сохранен с ошибкой ${e.message}`,
+                sessionId: this.id,
+                group: 'file',
+            });
         }
     }
 
@@ -128,7 +179,13 @@ class SessionService {
 
             // SERVER SENT FILE
             .on('session-file-available', (data: any) => {
-                logger.info(`Стал доступен файл ${data.fileId} в сессии `);
+                LoggingService.process(logger, {
+                    level: 'info',
+                    message: `Стал доступен файл ${data.fileId} в сессии`,
+                    sessionId: this.id,
+                    data,
+                    group: 'file',
+                });
 
                 if (this.demoMode) {
                     this.saveFileInDemoMode(data);
@@ -142,6 +199,24 @@ class SessionService {
             })
             .on('session-file-send-error', (data: any) => {
                 IPCServer.sendToClient('message.file', { message: 'message.file.error', source: data, type: 'error' });
+            })
+
+            .on('logs-get', async (data: any) => {
+                const border = new Date(data.from);
+
+                await LogPersistenceService.prototype.trimLog(border);
+
+                const entriesToSend = await LogPersistenceService.prototype.getUnsentEntries(border);
+                if (entriesToSend.length > 0) {
+                    this.client.send('logs-send', entriesToSend);
+                }
+            })
+
+            .on('logs-send-success', () => {
+                IPCServer.sendToClient('message.logs', { message: 'message.logs.success' });
+            })
+            .on('logs-send-error', (data: any) => {
+                IPCServer.sendToClient('message.logs', { message: 'message.logs.error', source: data, type: 'error' });
             });
     }
 }

@@ -4,6 +4,9 @@
  * Позволит обрабатывать ошибки разными способами.
  * Помимо вывода в stderr можно выводить в json формате при наличии флага
  */
+import LoggingService from '../service/LoggingService';
+import logger from '../logger';
+
 class CliException extends Error {
     public code: string | number | undefined | null;
 
@@ -19,8 +22,8 @@ class CliException extends Error {
         process.exit(1);
     }
 
-    private static showMessage(message: string) {
-        console.error('Ошибка: ' + message);
+    protected static showMessage(message: string) {
+        LoggingService.process(logger, { level: 'error', message: `Ошибка: ${message}`, group: 'exceptions' });
     }
 }
 

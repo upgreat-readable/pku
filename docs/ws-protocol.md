@@ -34,6 +34,9 @@ const socket = io.connect(link, {
 -   **`session-client-abort-success`**: успех остановки сессии
 -   **`session-client-abort-error`**: ошибка остановки сессии
 
+-   **`session-file-send-success`**: успех отправки файла
+-   **`session-file-send-error`**: ошибка отправки файла
+
 -   **`session-file-available`**: получение нового файла
 
     payload
@@ -49,6 +52,9 @@ const socket = io.connect(link, {
     -   **`finish`**: сессия закрыта т.к. приняты все файлы
     -   **`timeout-close`**: закрытие сессии по таймауту 5 минут, последний файл отправлен сервером, но клиент не вернул один из файлов
 
+-   **`logs-send-success`**: успех отправки логов
+-   **`logs-send-error`**: ошибка отправки логов
+
 В сообщения типа \*-error приходит сообщение с ошибкой.
 
 # Сообщения WS клиента
@@ -57,3 +63,4 @@ const socket = io.connect(link, {
 -   **`session-reconnect`**: попытка переподключения к сессии
 -   **`session-file-send`**: отправка файла
 -   **`session-client-abort`**: остановка сессии
+-   **`logs-send`**: отправка логов

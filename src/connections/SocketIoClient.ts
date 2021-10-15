@@ -1,7 +1,9 @@
 import io from 'socket.io-client';
+
 import logger from '../logger';
 import { link, userToken } from '../config';
 import IPCServer from './IPCServer';
+import LoggingService from '../service/LoggingService';
 
 export class SocketIoClient {
     // @ts-ignore
@@ -44,7 +46,7 @@ export class SocketIoClient {
     }
 
     public isConnect() {
-        return this.socket.connected;
+        return this.socket && this.socket.connected;
     }
 
     public disconnect() {
@@ -60,7 +62,13 @@ export class SocketIoClient {
      */
     private handleRemoteEvents() {
         this.socket
-            .on('connect', () => logger.info('connected to web socket server'))
+            .on('connect', () =>
+                LoggingService.process(logger, {
+                    level: 'info',
+                    message: 'установлено подключение к сокету удалённого сервера',
+                    group: 'socket.io',
+                })
+            )
             .on('disconnect', () => this.sendToClient('disconnect', 'error'))
 
             .on('connect_error', () => this.sendToClient('disconnect', 'error'))
@@ -69,7 +77,9 @@ export class SocketIoClient {
             .on('reconnect_attempt', () => this.sendToClient('reconnect_attempt'))
             .on('reconnect_error', () => this.sendToClient('reconnect_error', 'error'))
             .on('reconnect_failed', () => this.sendToClient('reconnect_failed', 'error'))
-            .on('reconnect', () => this.sendToClient('reconnect'));
+            .on('reconnect', () => this.sendToClient('reconnect'))
+
+            .on('error', (error: Object) => LoggingService.process(logger, { level: 'error', message: error.toString(), error, group: 'socket.io' }));
     }
 
     // noinspection JSMethodCanBeStatic

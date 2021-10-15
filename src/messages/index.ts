@@ -1,8 +1,10 @@
+import { Logger } from 'winston';
+
 import messagesConsole from './console';
 import CliException from '../exceptions/CliException';
 import MessageData from '../types/Message';
 import logger from '../logger';
-import { Logger } from 'winston';
+import LoggingService from '../service/LoggingService';
 
 const dictionary = { ...messagesConsole };
 
@@ -14,7 +16,7 @@ const dictionary = { ...messagesConsole };
  * ищет в справочнике
  */
 class Message implements MessageData {
-    type: string | undefined = 'info';
+    type: string = 'info';
     message: string;
     source: any;
     logger: Logger = logger;
@@ -42,15 +44,12 @@ class Message implements MessageData {
     }
 
     public show() {
-        // @ts-ignore
-        const loggerMethod = this.logger[this.type];
-
         if (this.source) {
-            loggerMethod(this.message + ' %s', this.source);
+            LoggingService.process(this.logger, { level: this.type, message: `${this.message} ${JSON.stringify(this.source)}`, group: 'IPC' });
             return;
         }
 
-        loggerMethod(this.message);
+        LoggingService.process(this.logger, { level: this.type, message: this.message, group: 'IPC' });
     }
 
     public setLogger(logger: Logger) {

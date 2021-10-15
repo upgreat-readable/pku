@@ -1,7 +1,8 @@
-import AbstractCommand from './interface/AbstractCommand';
-import IPCClient from '../connections/IPCClient';
 import { Command } from 'commander';
 import fs from 'fs';
+
+import AbstractCommand from './interface/AbstractCommand';
+import IPCClient from '../connections/IPCClient';
 import { IPCServer } from '../connections/IPCServer';
 import CliException from '../exceptions/CliException';
 import MessageData from '../types/Message';
@@ -27,6 +28,7 @@ class SendFileCommand extends AbstractCommand {
                 // @ts-ignore
                 this.getFileContent(options.fileId);
             } catch (e) {
+                Message.fromDictionary({ type: 'error', message: 'message.file.error' }).setLogger(CommandLogger).show();
                 throw new CliException('Указанный файл не существует.');
             }
             this.validateOptions(options);
