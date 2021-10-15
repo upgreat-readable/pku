@@ -21,7 +21,7 @@ class IPCClient {
         }
 
         RootIPC.config.logger = function (message) {
-            const level = message.includes('\n') ? 'verbose' : 'info';
+            const level = message.includes('ipc.sendLogs') ? 'verbose' : 'info';
             LoggingService.process(IPCClientLogger, { level, message, group: 'IPC' });
         };
     }
