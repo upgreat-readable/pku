@@ -10,6 +10,7 @@ import GetNextFileCommand from '../commands/GetNextFileCommand';
 import GetFileListCommand from '../commands/GetFileListCommand';
 import ReconnectCommand from '../commands/ReconnectCommand';
 import SendLogsCommand from '../commands/SendLogsCommand';
+import RepeatFileCommand from '../commands/RepeatFileCommand';
 
 program.name('./pku').storeOptionsAsProperties(false).passCommandToAction(false);
 
@@ -18,6 +19,7 @@ commandList.push(new CriteriaCommand());
 commandList.push(new StartCommand());
 commandList.push(new StopCommand());
 commandList.push(new ReconnectCommand());
+commandList.push(new RepeatFileCommand());
 commandList.push(new SendFileCommand());
 commandList.push(new PSRCommand());
 commandList.push(new DemoMoveFileCommand());

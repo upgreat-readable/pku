@@ -34,6 +34,9 @@ const socket = io.connect(link, {
 -   **`session-client-abort-success`**: успех остановки сессии
 -   **`session-client-abort-error`**: ошибка остановки сессии
 
+-   **`session-file-repeat-success`**: успех повторного получения файла
+-   **`session-file-repeat-error`**: ошибка повторного получения файла
+
 -   **`session-file-send-success`**: успех отправки файла
 -   **`session-file-send-error`**: ошибка отправки файла
 
@@ -61,6 +64,7 @@ const socket = io.connect(link, {
 
 -   **`session-start`**: начало сессии
 -   **`session-reconnect`**: попытка переподключения к сессии
+-   **`session-file-repeat`**: запрос повторного получения файла
 -   **`session-file-send`**: отправка файла
 -   **`session-client-abort`**: остановка сессии
 -   **`logs-send`**: отправка логов

@@ -51,6 +51,17 @@ class SessionService {
         this.client.send('session-client-abort', { sessionId: this.id });
     }
 
+    repeatFile() {
+        this.connect();
+        LoggingService.process(logger, {
+            level: 'info',
+            message: `запрошено повторное получение файла от сервера`,
+            sessionId: this.id,
+            group: 'file',
+        });
+        this.client.send('session-file-repeat');
+    }
+
     sendFile(data: any) {
         this.connect();
         LoggingService.process(logger, {
@@ -198,6 +209,31 @@ class SessionService {
                 } else {
                     this.saveFile(data);
                 }
+            })
+            .on('session-file-repeat-success', (data: any) => {
+                LoggingService.process(logger, {
+                    level: 'info',
+                    message: `Повторно получен файл ${data.fileId}`,
+                    sessionId: this.id,
+                    fileId: data.fileId,
+                    group: 'file',
+                });
+
+                try {
+                    fs.writeFileSync(`files/in/${data.fileId}.json`, JSON.stringify(data.content));
+                    IPCServer.sendToClient('message.file.repeat', { message: 'message.file.repeat.success' });
+                } catch (e) {
+                    LoggingService.process(logger, {
+                        level: 'error',
+                        message: `файл ${data.fileId} не был сохранен с ошибкой ${e.message}`,
+                        sessionId: this.id,
+                        group: 'file',
+                    });
+                    IPCServer.sendToClient('message.file.repeat', { message: 'message.file.repeat.error', source: e.message, type: 'error' });
+                }
+            })
+            .on('session-file-repeat-error', (data: any) => {
+                IPCServer.sendToClient('message.file.repeat', { message: 'message.file.repeat.error', source: data, type: 'error' });
             })
 
             .on('session-file-send-success', (data: any) => {
