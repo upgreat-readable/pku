@@ -71,7 +71,7 @@ export default winston.createLogger({
     level: 'verbose',
     transports: [
         new winston.transports.Console({ format: consoleFormat }),
-        new winston.transports.File({ filename: `logs/${date}/${prefix}combined.log`, format: fileFormat }),
+        new winston.transports.File({ filename: `logs/${date}/${prefix}various.log`, format: fileFormat }),
         new winston.transports.File({ filename: `logs/${date}/${prefix}${logPersistenceFile}`, format: persistenceFormat, level: 'info' }),
     ],
 });
