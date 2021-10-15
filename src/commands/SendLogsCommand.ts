@@ -1,5 +1,4 @@
 import { Command } from 'commander';
-import fs from 'fs';
 
 import AbstractCommand from './interface/AbstractCommand';
 import IPCClient from '../connections/IPCClient';
@@ -8,9 +7,7 @@ import CliException from '../exceptions/CliException';
 import MessageData from '../types/Message';
 import Message from '../messages';
 import { CommandLogger } from '../logger';
-import { logPersistenceFile } from '../config';
 import LogPersistenceService from '../service/LogPersistenceService';
-import LogEntriesWithPositionToMark from '../types/LogEntriesWithPositionToMark';
 
 /**
  * Команда отправки логов
@@ -31,14 +28,8 @@ class SendLogsCommand extends AbstractCommand {
         await new Promise(resolve => {
             this.validateOptions(options);
 
-            const hasFile = fs.existsSync(`logs/${options.date}/${logPersistenceFile}`);
-
-            let logEntries: LogEntriesWithPositionToMark = { entries: [], position: -1 };
-            if (hasFile) {
-                logEntries = LogPersistenceService.getUnsentLogEntries(options.date);
-            }
-
-            if (!hasFile || logEntries.entries.length === 0) {
+            const logEntries = LogPersistenceService.getUnsentDayLogEntries(options.date);
+            if (logEntries.entries.length === 0) {
                 Message.fromDictionary({ type: 'error', message: 'message.logs.not-found' }).setLogger(CommandLogger).show();
                 throw new CliException(`Не найдены логи для отправки на сервер для даты ${options.date}.`);
             }
@@ -47,7 +38,7 @@ class SendLogsCommand extends AbstractCommand {
             client.connect().then((connection: any) => {
                 connection.on('message.logs', (messageData: MessageData) => {
                     if (messageData.message === 'message.logs.success') {
-                        LogPersistenceService.placeSentMark(options.date, logEntries.position);
+                        LogPersistenceService.placeSentMarks(options.date, logEntries.serverPosition, logEntries.clientPosition);
                     }
 
                     Message.fromDictionary(messageData).setLogger(CommandLogger).show();

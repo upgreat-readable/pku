@@ -89,7 +89,7 @@ fileId - это идентификатор, без указания расшир
 Отправляются только те записи, которые не были отправлены ранее.
 
 ```shell script
-# Командой sendLogs отправляются записи из файла /logs/<date>/persistence.log на сервер
+# Командой sendLogs отправляются записи из файлов /logs/<date>/server-persistence.log и /logs/<date>/client-persistence.log на сервер
 ./pku sendLogs --date <date>
 
 # Пример
