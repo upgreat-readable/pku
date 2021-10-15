@@ -84,19 +84,19 @@ fileId - это идентификатор, без указания расшир
 
 Команду принудительного завершения не стоит использовать для завершения сессии в рабочем режиме, в случае использовании команды отчет не будет составлен.
 
-## Отправка логов сессии
+## Отправка логов
 
 Отправляются только те записи, которые не были отправлены ранее.
 
 ```shell script
-# Командой sendLogs отправляются записи из файла /logs/sessions/<sessionId>/persistence.log на сервер
-./pku sendLogs --sessionId <sessionId>
+# Командой sendLogs отправляются записи из файлов /logs/<date>/server-persistence.log и /logs/<date>/client-persistence.log на сервер
+./pku sendLogs --date <date>
 
 # Пример
-./pku sendLogs --sessionId 1094
+./pku sendLogs --date 2021-10-14
 ```
 
-sessionId - это ID сессии.
+date - это дата в формате ISO, логи за которую нужно отправить.
 
 ## Базовый алгоритм работы
 

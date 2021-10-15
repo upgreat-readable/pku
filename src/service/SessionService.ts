@@ -54,7 +54,7 @@ class SessionService {
     sendFile(data: any) {
         this.connect();
         LoggingService.process(logger, {
-            level: 'debug',
+            level: 'verbose',
             message: `запрошена отправка файла ${data.fileId} на сервер`,
             sessionId: this.id,
             data,
@@ -89,7 +89,7 @@ class SessionService {
         this.connect();
         LoggingService.process(logger, {
             level: 'info',
-            message: `запрошена отправка логов сессии ${data.sessionId} на сервер`,
+            message: `запрошена отправка логов за ${data.date} на сервер`,
             sessionId: this.id,
             group: 'logs',
         });
@@ -98,7 +98,13 @@ class SessionService {
 
     // noinspection JSMethodCanBeStatic
     private saveFile(data: any) {
-        LoggingService.process(logger, { level: 'info', message: `сохранение файла ${data.fileId}`, sessionId: this.id, data, group: 'file' });
+        LoggingService.process(logger, {
+            level: 'info',
+            message: `сохранение файла ${data.fileId}`,
+            sessionId: this.id,
+            fileId: data.fileId,
+            group: 'file',
+        });
         try {
             fs.writeFileSync('files/in/' + data.fileId + '.json', JSON.stringify(data.content));
         } catch (e) {
@@ -121,7 +127,7 @@ class SessionService {
             level: 'info',
             message: `DEMO-режим - сохранение файла ${data.fileId}`,
             sessionId: this.id,
-            data,
+            fileId: data.fileId,
             group: 'file',
         });
         try {
@@ -183,7 +189,7 @@ class SessionService {
                     level: 'info',
                     message: `Стал доступен файл ${data.fileId} в сессии`,
                     sessionId: this.id,
-                    data,
+                    fileId: data.fileId,
                     group: 'file',
                 });
 
@@ -199,17 +205,6 @@ class SessionService {
             })
             .on('session-file-send-error', (data: any) => {
                 IPCServer.sendToClient('message.file', { message: 'message.file.error', source: data, type: 'error' });
-            })
-
-            .on('logs-get', async (data: any) => {
-                const border = new Date(data.from);
-
-                await LogPersistenceService.prototype.trimLog(border);
-
-                const entriesToSend = await LogPersistenceService.prototype.getUnsentEntries(border);
-                if (entriesToSend.length > 0) {
-                    this.client.send('logs-send', entriesToSend);
-                }
             })
 
             .on('logs-send-success', () => {

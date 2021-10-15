@@ -1,31 +1,52 @@
-import { LogEntry } from 'winston';
 import fs from 'fs';
 
 import { logPersistenceFile } from '../config';
+import LogEntriesWithPositionsToMark from '../types/LogEntriesWithPositionsToMark';
 import LogEntriesWithPositionToMark from '../types/LogEntriesWithPositionToMark';
 
 class LogPersistenceService {
     private static readonly sentMark = '### logs sent ###\n';
 
-    public async getUnsentEntries(from: Date): Promise<Array<LogEntry>> {
-        const logEntries = LogPersistenceService.getUnsentLogEntries();
+    /**
+     * Получить не отправленные ранее записи логов за день
+     *
+     * @param day
+     */
+    public static getUnsentDayLogEntries(day: string): LogEntriesWithPositionsToMark {
+        const serverEntries = this.getUnsentLogEntries(`logs/${day}/server-${logPersistenceFile}`);
+        const clientEntries = this.getUnsentLogEntries(`logs/${day}/client-${logPersistenceFile}`);
 
-        return logEntries.entries.filter(entry => new Date(entry.timestamp) > from);
+        return {
+            entries: [...serverEntries.entries, ...clientEntries.entries],
+            serverPosition: serverEntries.position,
+            clientPosition: clientEntries.position,
+        };
     }
 
-    public async trimLog(to: Date): Promise<void> {
-        const logEntries = LogPersistenceService.getUnsentLogEntries();
-
-        const dataToKeep = logEntries.entries
-            .filter(entry => new Date(entry.timestamp) > to)
-            .map(entry => JSON.stringify(entry))
-            .join('\n');
-
-        fs.writeFileSync(`logs/${logPersistenceFile}`, dataToKeep);
+    /**
+     * Пометить записи в логах, которые были отправлены
+     *
+     * @param day
+     * @param serverPosition
+     * @param clientPosition
+     */
+    public static placeSentMarks(day: string, serverPosition: number, clientPosition: number) {
+        this.placeSingleSentMark(`logs/${day}/server-${logPersistenceFile}`, serverPosition);
+        this.placeSingleSentMark(`logs/${day}/client-${logPersistenceFile}`, clientPosition);
     }
 
-    public static getUnsentLogEntries(sessionId: number | null = null): LogEntriesWithPositionToMark {
-        const content = fs.readFileSync(this.getLogPath(sessionId)).toString();
+    /**
+     * Получить не отправленные ранее записи лога
+     *
+     * @param logPath
+     * @private
+     */
+    private static getUnsentLogEntries(logPath: string): LogEntriesWithPositionToMark {
+        if (!fs.existsSync(logPath)) {
+            return { entries: [], position: -1 };
+        }
+
+        const content = fs.readFileSync(logPath).toString();
         const markIndex = content.lastIndexOf(this.sentMark);
         const unsentContent = markIndex === -1 ? content : content.substring(markIndex + this.sentMark.length);
 
@@ -43,26 +64,21 @@ class LogPersistenceService {
     }
 
     /**
-     * Пометить записи, которые были отправлены
+     * Пометить записи в логе, которые были отправлены
      *
-     * @param sessionId
+     * @param logPath
      * @param position
+     * @private
      */
-    public static placeSentMark(sessionId: number | null = null, position: number) {
-        const logPath = this.getLogPath(sessionId);
+    private static placeSingleSentMark(logPath: string, position: number) {
+        if (!fs.existsSync(logPath)) {
+            return;
+        }
 
         const content = fs.readFileSync(logPath).toString();
         const markedContent = content.substring(0, position) + this.sentMark + content.substring(position);
 
         fs.writeFileSync(logPath, markedContent);
-    }
-
-    private static getLogPath(sessionId: number | null = null): string {
-        if (sessionId === null) {
-            return `logs/${logPersistenceFile}`;
-        }
-
-        return `logs/sessions/${sessionId}/${logPersistenceFile}`;
     }
 
     private static parseLine(line: string): any {
