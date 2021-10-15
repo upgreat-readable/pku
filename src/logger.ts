@@ -15,11 +15,13 @@ const persistenceFormat = format.combine(format.timestamp(), format.json());
 
 const date = new Date().toISOString().substring(0, 10);
 
+const prefix = process.argv0 === 'node' ? 'client-' : 'server-';
+
 export const CommandLocalLogger = winston.createLogger({
     level: 'verbose',
     transports: [
         new winston.transports.Console({ format: consoleFormat }),
-        new winston.transports.File({ filename: `logs/${date}/command.log`, format: fileFormat }),
+        new winston.transports.File({ filename: `logs/${date}/${prefix}command.log`, format: fileFormat }),
     ],
 });
 
@@ -27,8 +29,8 @@ export const CommandLogger = winston.createLogger({
     level: 'verbose',
     transports: [
         new winston.transports.Console({ format: consoleFormat }),
-        new winston.transports.File({ filename: `logs/${date}/command.log`, format: fileFormat }),
-        new winston.transports.File({ filename: `logs/${date}/${logPersistenceFile}`, format: persistenceFormat, level: 'info' }),
+        new winston.transports.File({ filename: `logs/${date}/${prefix}command.log`, format: fileFormat }),
+        new winston.transports.File({ filename: `logs/${date}/${prefix}${logPersistenceFile}`, format: persistenceFormat, level: 'info' }),
     ],
 });
 
@@ -36,16 +38,16 @@ export const IPCServerLogger = winston.createLogger({
     level: 'verbose',
     transports: [
         new winston.transports.Console({ format: consoleFormat }),
-        new winston.transports.File({ filename: `logs/${date}/ipc-server.log`, format: fileFormat }),
-        new winston.transports.File({ filename: `logs/${date}/${logPersistenceFile}`, format: persistenceFormat, level: 'info' }),
+        new winston.transports.File({ filename: `logs/${date}/${prefix}ipc-server.log`, format: fileFormat }),
+        new winston.transports.File({ filename: `logs/${date}/${prefix}${logPersistenceFile}`, format: persistenceFormat, level: 'info' }),
     ],
 });
 
 export const IPCClientLogger = winston.createLogger({
     level: 'verbose',
     transports: [
-        new winston.transports.File({ filename: `logs/${date}/ipc-client.log`, format: fileFormat }),
-        new winston.transports.File({ filename: `logs/${date}/${logPersistenceFile}`, format: persistenceFormat, level: 'info' }),
+        new winston.transports.File({ filename: `logs/${date}/${prefix}ipc-client.log`, format: fileFormat }),
+        new winston.transports.File({ filename: `logs/${date}/${prefix}${logPersistenceFile}`, format: persistenceFormat, level: 'info' }),
     ],
 });
 
@@ -53,7 +55,7 @@ export default winston.createLogger({
     level: 'verbose',
     transports: [
         new winston.transports.Console({ format: consoleFormat }),
-        new winston.transports.File({ filename: `logs/${date}/combined.log`, format: fileFormat }),
-        new winston.transports.File({ filename: `logs/${date}/${logPersistenceFile}`, format: persistenceFormat, level: 'info' }),
+        new winston.transports.File({ filename: `logs/${date}/${prefix}combined.log`, format: fileFormat }),
+        new winston.transports.File({ filename: `logs/${date}/${prefix}${logPersistenceFile}`, format: persistenceFormat, level: 'info' }),
     ],
 });
