@@ -152,6 +152,50 @@ class SessionService {
         }
     }
 
+    private saveMissedFile(data: any) {
+        LoggingService.process(logger, {
+            level: 'info',
+            message: `получен пропущенный файл ${data.fileId}`,
+            sessionId: this.id,
+            fileId: data.fileId,
+            group: 'file',
+        });
+
+        try {
+            fs.writeFileSync(`files/in/${data.fileId}.json`, JSON.stringify(data.content));
+        } catch (e) {
+            LoggingService.process(logger, {
+                level: 'error',
+                message: `пропущенный файл ${data.fileId} не был сохранен с ошибкой ${e.message}`,
+                sessionId: this.id,
+                group: 'file',
+            });
+        }
+    }
+
+    private saveFileAgain(data: any) {
+        LoggingService.process(logger, {
+            level: 'info',
+            message: `повторно получен файл ${data.fileId}`,
+            sessionId: this.id,
+            fileId: data.fileId,
+            group: 'file',
+        });
+
+        try {
+            fs.writeFileSync(`files/in/${data.fileId}.json`, JSON.stringify(data.content));
+            IPCServer.sendToClient('message.file.repeat', { message: 'message.file.repeat.success' });
+        } catch (e) {
+            LoggingService.process(logger, {
+                level: 'error',
+                message: `файл ${data.fileId} не был сохранен с ошибкой ${e.message}`,
+                sessionId: this.id,
+                group: 'file',
+            });
+            IPCServer.sendToClient('message.file.repeat', { message: 'message.file.repeat.error', source: e.message, type: 'error' });
+        }
+    }
+
     subscribe() {
         console.log('subscribe');
         this.client.socket
@@ -205,29 +249,23 @@ class SessionService {
                 }
             })
             .on('session-file-repeat-success', (data: any) => {
-                LoggingService.process(logger, {
-                    level: 'info',
-                    message: `Повторно получен файл ${data.fileId}`,
-                    sessionId: this.id,
-                    fileId: data.fileId,
-                    group: 'file',
-                });
-
-                try {
-                    fs.writeFileSync(`files/in/${data.fileId}.json`, JSON.stringify(data.content));
-                    IPCServer.sendToClient('message.file.repeat', { message: 'message.file.repeat.success' });
-                } catch (e) {
-                    LoggingService.process(logger, {
-                        level: 'error',
-                        message: `файл ${data.fileId} не был сохранен с ошибкой ${e.message}`,
-                        sessionId: this.id,
-                        group: 'file',
-                    });
-                    IPCServer.sendToClient('message.file.repeat', { message: 'message.file.repeat.error', source: e.message, type: 'error' });
+                if (data.missed) {
+                    this.saveMissedFile(data);
+                } else {
+                    this.saveFileAgain(data);
                 }
             })
             .on('session-file-repeat-error', (data: any) => {
-                IPCServer.sendToClient('message.file.repeat', { message: 'message.file.repeat.error', source: data, type: 'error' });
+                if (data.missed) {
+                    LoggingService.process(logger, {
+                        level: 'error',
+                        message: `пропущенный файл не был получен с ошибкой "${data.message}"`,
+                        sessionId: this.id,
+                        group: 'file',
+                    });
+                } else {
+                    IPCServer.sendToClient('message.file.repeat', { message: 'message.file.repeat.error', source: data, type: 'error' });
+                }
             })
 
             .on('session-file-send-success', (data: any) => {
