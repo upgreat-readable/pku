@@ -1,11 +1,11 @@
 import RootIPC from 'node-ipc';
 import logger, { IPCServerLogger } from '../logger';
-import { IPCServerName, socketPath } from '../config';
+import { isDebug, IPCServerName, socketPath } from '../config';
 import fs from 'fs';
 import SessionService from '../service/SessionService';
 import MessageData from '../types/Message';
 import Message from '../messages';
-
+import http, { IncomingMessage, RequestListener, Server, ServerResponse } from 'http';
 /**
  * Класс IPC сервера
  * отвечает за работу демонизированного процесса
@@ -30,6 +30,28 @@ export class IPCServer {
         RootIPC.serve(socketPath);
         this.handleEvents();
         this.getCurrent().start();
+
+        if (isDebug) {
+            this.initHttpServer();
+        }
+    }
+
+    public initHttpServer() {
+        const port = 3000;
+        const requestHandler: RequestListener = (req: IncomingMessage, res: ServerResponse) => {
+            if (req.url === '/metrics') {
+                const isConnected = this.session.client.isConnect() ?? false;
+                const payload = { isConnected };
+                const content = JSON.stringify(payload);
+                console.log(`get metrics:${content}`);
+                res.setHeader('Content-Type', 'application/json');
+                res.end(content);
+            } else {
+                res.end('');
+            }
+        };
+        const server: Server = http.createServer(requestHandler);
+        server.listen(port);
     }
 
     public getCurrent() {
