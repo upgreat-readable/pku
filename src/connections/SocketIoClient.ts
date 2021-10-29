@@ -69,7 +69,7 @@ export class SocketIoClient {
                     group: 'socket.io',
                 })
             )
-            .on('disconnect', () => this.sendToClient('disconnect', 'error'))
+            .on('disconnect', () => this.sendToClient('disconnect'))
 
             .on('connect_error', () => this.sendToClient('disconnect', 'error'))
             .on('connect_timeout', () => this.sendToClient('disconnect', 'error'))
