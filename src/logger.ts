@@ -3,16 +3,18 @@ import * as Transport from 'winston-transport';
 
 import { logFormat, logPersistenceFile, isDebug } from './config';
 
+const timestampOption = { format: 'YYYY-MM-DDTHH:mm:ss.SSSZ' };
+
 const printf = format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`);
-let consoleFormat = format.combine(format.json(), format.timestamp(), format.uncolorize());
+let consoleFormat = format.combine(format.json(), format.timestamp(timestampOption), format.uncolorize());
 let fileFormat = consoleFormat;
 
 if (logFormat === 'pretty') {
-    consoleFormat = format.combine(format.timestamp(), format.splat(), format.colorize(), format.simple(), printf);
-    fileFormat = format.combine(format.simple(), format.timestamp(), printf, format.uncolorize());
+    consoleFormat = format.combine(format.timestamp(timestampOption), format.splat(), format.colorize(), format.simple(), printf);
+    fileFormat = format.combine(format.simple(), format.timestamp(timestampOption), printf, format.uncolorize());
 }
 
-const persistenceFormat = format.combine(format.timestamp(), format.json());
+const persistenceFormat = format.combine(format.timestamp(timestampOption), format.json());
 
 const date = new Date().toISOString().substring(0, 10);
 
