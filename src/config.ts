@@ -1,7 +1,7 @@
 export const socketPath = '/tmp/ipc.sock';
 export const IPCServerName = 'world';
 export const logFormat = process.env.LOG_FORMAT;
-export const isDebug = process.env.DEBUG_FLAG;
+export const isDebug = process.env.DEBUG_FLAG === 'true';
 export const logPersistenceFile = 'persistence.log';
 
 export const debugLink = process.env.DEBUG_ADDRESS;
