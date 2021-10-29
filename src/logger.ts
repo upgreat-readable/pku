@@ -1,7 +1,7 @@
 import winston, { format } from 'winston';
 import * as Transport from 'winston-transport';
 
-import { logFormat, logPersistenceFile } from './config';
+import { logFormat, logPersistenceFile, isDebug } from './config';
 
 const printf = format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`);
 let consoleFormat = format.combine(format.json(), format.timestamp(), format.uncolorize());
@@ -23,6 +23,9 @@ const commandLocalLoggerTransports: Transport[] = [new winston.transports.Consol
 if (isClientProcess) {
     commandLocalLoggerTransports.push(new winston.transports.File({ filename: `logs/${date}/${prefix}command.log`, format: fileFormat }));
 }
+if (isDebug) {
+    commandLocalLoggerTransports.push(new winston.transports.File({ filename: `logs/${prefix}various.log`, format: fileFormat }));
+}
 
 export const CommandLocalLogger = winston.createLogger({
     level: 'verbose',
@@ -35,6 +38,9 @@ const commandLoggerTransports: Transport[] = [
 ];
 if (isClientProcess) {
     commandLoggerTransports.push(new winston.transports.File({ filename: `logs/${date}/${prefix}command.log`, format: fileFormat }));
+}
+if (isDebug) {
+    commandLoggerTransports.push(new winston.transports.File({ filename: `logs/${prefix}various.log`, format: fileFormat }));
 }
 
 export const CommandLogger = winston.createLogger({
@@ -49,6 +55,9 @@ const IPCServerLoggerTransports = [
 if (!isClientProcess) {
     IPCServerLoggerTransports.push(new winston.transports.File({ filename: `logs/${date}/${prefix}ipc-server.log`, format: fileFormat }));
 }
+if (isDebug) {
+    IPCServerLoggerTransports.push(new winston.transports.File({ filename: `logs/${prefix}various.log`, format: fileFormat }));
+}
 
 export const IPCServerLogger = winston.createLogger({
     level: 'verbose',
@@ -61,17 +70,25 @@ const IPCClientLoggerTransports = [
 if (isClientProcess) {
     IPCClientLoggerTransports.push(new winston.transports.File({ filename: `logs/${date}/${prefix}ipc-client.log`, format: fileFormat }));
 }
+if (isDebug) {
+    IPCClientLoggerTransports.push(new winston.transports.File({ filename: `logs/${prefix}various.log`, format: fileFormat }));
+}
 
 export const IPCClientLogger = winston.createLogger({
     level: 'verbose',
     transports: IPCClientLoggerTransports,
 });
 
+const defaultTransports = [
+    new winston.transports.Console({ format: consoleFormat }),
+    new winston.transports.File({ filename: `logs/${date}/${prefix}various.log`, format: fileFormat }),
+    new winston.transports.File({ filename: `logs/${date}/${prefix}${logPersistenceFile}`, format: persistenceFormat, level: 'info' }),
+];
+if (isDebug) {
+    defaultTransports.push(new winston.transports.File({ filename: `logs/${prefix}various.log`, format: fileFormat }));
+}
+
 export default winston.createLogger({
     level: 'verbose',
-    transports: [
-        new winston.transports.Console({ format: consoleFormat }),
-        new winston.transports.File({ filename: `logs/${date}/${prefix}various.log`, format: fileFormat }),
-        new winston.transports.File({ filename: `logs/${date}/${prefix}${logPersistenceFile}`, format: persistenceFormat, level: 'info' }),
-    ],
+    transports: defaultTransports,
 });
