@@ -4,6 +4,7 @@ import logger from '../logger';
 import { link, userToken } from '../config';
 import IPCServer from './IPCServer';
 import LoggingService from '../service/LoggingService';
+import { GetNextFileService } from '../service/GetNextFileService';
 
 export class SocketIoClient {
     // @ts-ignore
@@ -62,13 +63,12 @@ export class SocketIoClient {
      */
     private handleRemoteEvents() {
         this.socket
-            .on('connect', () =>
-                LoggingService.process(logger, {
-                    level: 'info',
-                    message: 'установлено подключение к сокету удалённого сервера',
-                    group: 'socket.io',
-                })
-            )
+            .on('connect', () => {
+                LoggingService.process(logger, { level: 'info', message: 'установлено подключение к сокету удалённого сервера', group: 'socket.io' });
+
+                LoggingService.process(logger, { level: 'info', message: 'запрос на получение пропущенного файла', group: 'socket.io' });
+                this.socket.emit('session-file-repeat', { lastFileId: new GetNextFileService().getFileName() });
+            })
             .on('disconnect', () => this.sendToClient('disconnect', 'error'))
 
             .on('connect_error', () => this.sendToClient('disconnect', 'error'))
@@ -77,7 +77,12 @@ export class SocketIoClient {
             .on('reconnect_attempt', () => this.sendToClient('reconnect_attempt'))
             .on('reconnect_error', () => this.sendToClient('reconnect_error', 'error'))
             .on('reconnect_failed', () => this.sendToClient('reconnect_failed', 'error'))
-            .on('reconnect', () => this.sendToClient('reconnect'))
+            .on('reconnect', () => {
+                this.sendToClient('reconnect');
+
+                LoggingService.process(logger, { level: 'info', message: 'запрос на получение пропущенного файла', group: 'socket.io' });
+                this.socket.emit('session-file-repeat', { lastFileId: new GetNextFileService().getFileName() });
+            })
 
             .on('error', (error: Object) => LoggingService.process(logger, { level: 'error', message: error.toString(), error, group: 'socket.io' }));
     }

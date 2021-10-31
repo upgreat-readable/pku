@@ -8,6 +8,12 @@ import LoggingService from './LoggingService';
 export class GetNextFileService {
     protected lastFileName: any;
 
+    public getFileName() {
+        const file = this.goSignal();
+
+        return file.toString().split('.')[0];
+    }
+
     goSignal() {
         try {
             const dirPath = 'files/in/';
