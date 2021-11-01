@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import { Counter, Gauge } from 'prom-client';
 
 import logger from '../logger';
 import { link, userToken } from '../config';
@@ -61,15 +62,36 @@ export class SocketIoClient {
      * Обработка событий инициированных удаленным сервером
      */
     private handleRemoteEvents() {
+        const connectedSockets = new Gauge({
+            name: 'socket_io_connected',
+            help: 'Number of currently connected sockets',
+        });
+
+        const connectTotal = new Counter({
+            name: 'socket_io_connect_total',
+            help: 'Total count of socket.io connection requests',
+        });
+
+        const disconnectTotal = new Counter({
+            name: 'socket_io_disconnect_total',
+            help: 'Total count of socket.io disconnections',
+        });
+
         this.socket
-            .on('connect', () =>
+            .on('connect', () => {
                 LoggingService.process(logger, {
                     level: 'info',
                     message: 'установлено подключение к сокету удалённого сервера',
                     group: 'socket.io',
-                })
-            )
-            .on('disconnect', () => this.sendToClient('disconnect', 'error'))
+                });
+                connectTotal.inc();
+                connectedSockets.inc();
+            })
+            .on('disconnect', () => {
+                this.sendToClient('disconnect', 'error');
+                connectedSockets.dec();
+                disconnectTotal.inc();
+            })
 
             .on('connect_error', () => this.sendToClient('disconnect', 'error'))
             .on('connect_timeout', () => this.sendToClient('disconnect', 'error'))
@@ -85,7 +107,7 @@ export class SocketIoClient {
     // noinspection JSMethodCanBeStatic
     private sendToClient(code: string, type: string = 'info') {
         IPCServer.sendToClient('message.network', {
-            message: 'message.socket-io.' + code,
+            message: `message.socket-io.${code}`,
             type,
         });
     }

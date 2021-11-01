@@ -2,6 +2,9 @@ import RootIPC from 'node-ipc';
 import fs from 'fs';
 import { LogEntry } from 'winston';
 import http, { IncomingMessage, RequestListener, Server, ServerResponse } from 'http';
+import * as url from 'url';
+
+import promClient from 'prom-client';
 
 import { IPCServerLogger } from '../logger';
 import { isDebug, socketPath } from '../config';
@@ -9,7 +12,6 @@ import SessionService from '../service/SessionService';
 import MessageData from '../types/Message';
 import Message from '../messages';
 import LoggingService from '../service/LoggingService';
-
 /**
  * Класс IPC сервера
  * отвечает за работу демонизированного процесса
@@ -53,20 +55,26 @@ export class IPCServer {
         this.handleEvents();
         this.getCurrent().start();
         if (isDebug) {
-            this.initHttpServer();
+            this.initHttpMetricServer();
         }
     }
 
-    public initHttpServer() {
+    public initHttpMetricServer() {
+        // eslint-disable-next-line no-shadow,global-require
+        const promRegister = promClient.register;
+
         const port = 3000;
-        const requestHandler: RequestListener = (req: IncomingMessage, res: ServerResponse) => {
-            if (req.url === '/metrics') {
-                const isConnected = this.session.client.isConnect() ?? false;
-                const payload = { isConnected };
-                const content = JSON.stringify(payload);
-                console.log(`get metrics:${content}`);
-                res.setHeader('Content-Type', 'application/json');
-                res.end(content);
+        const requestHandler: RequestListener = async (req: IncomingMessage, res: ServerResponse) => {
+            const route = url.parse(`${req.url}`).pathname;
+            if (route === '/metrics') {
+                /*  if (this.session.client.socket) {
+                      ioMetrics(this.session.client.socket);
+                  } */
+
+                const result = await promRegister.metrics();
+                //      console.log(result);
+                res.setHeader('Content-Type', promRegister.contentType);
+                res.end(result);
             } else {
                 res.end('');
             }
