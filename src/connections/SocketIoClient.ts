@@ -107,7 +107,7 @@ export class SocketIoClient {
     // noinspection JSMethodCanBeStatic
     private sendToClient(code: string, type: string = 'info') {
         IPCServer.sendToClient('message.network', {
-            message: `message.socket-io.${code}`,
+            message: 'message.socket-io.' + code,
             type,
         });
     }
