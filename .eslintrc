@@ -2,6 +2,7 @@
     "plugins": ["eslint-plugin-import-helpers", "@typescript-eslint"],
     "extends": ["airbnb-base", "prettier"],
     "rules": {
+        "no-continue": "off",
         "no-undef": 0,
         "no-restricted-syntax": 0,
         "class-methods-use-this": 0,
