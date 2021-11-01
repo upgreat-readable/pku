@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.9.0) (2021-10-31)
+
+### Features
+
+-   **repeat:** repeat file теперь работает при реконнекте и коннекте
+-   **psr:** обновленная версия + новая логика номинаций (команда старта та же)
+
 ## [1.8.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.8.0) (2021-10-18)
 
 ## [1.7.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.7.0) (2021-10-15)
