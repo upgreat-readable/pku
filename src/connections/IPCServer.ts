@@ -60,19 +60,14 @@ export class IPCServer {
     }
 
     public initHttpMetricServer() {
-        // eslint-disable-next-line no-shadow,global-require
         const promRegister = promClient.register;
 
         const port = 3000;
         const requestHandler: RequestListener = async (req: IncomingMessage, res: ServerResponse) => {
             const route = url.parse(`${req.url}`).pathname;
             if (route === '/metrics') {
-                /*  if (this.session.client.socket) {
-                      ioMetrics(this.session.client.socket);
-                  } */
-
                 const result = await promRegister.metrics();
-                //      console.log(result);
+
                 res.setHeader('Content-Type', promRegister.contentType);
                 res.end(result);
             } else {
