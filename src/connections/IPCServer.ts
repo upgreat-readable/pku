@@ -1,14 +1,17 @@
 import RootIPC from 'node-ipc';
 import fs from 'fs';
 import { LogEntry } from 'winston';
+import http, { IncomingMessage, RequestListener, Server, ServerResponse } from 'http';
+import * as url from 'url';
+
+import promClient from 'prom-client';
 
 import { IPCServerLogger } from '../logger';
-import { socketPath } from '../config';
+import { isDebug, socketPath } from '../config';
 import SessionService from '../service/SessionService';
 import MessageData from '../types/Message';
 import Message from '../messages';
 import LoggingService from '../service/LoggingService';
-
 /**
  * Класс IPC сервера
  * отвечает за работу демонизированного процесса
@@ -51,6 +54,28 @@ export class IPCServer {
         RootIPC.serve(socketPath);
         this.handleEvents();
         this.getCurrent().start();
+        if (isDebug) {
+            this.initHttpMetricServer();
+        }
+    }
+
+    public initHttpMetricServer() {
+        const promRegister = promClient.register;
+
+        const port = 3000;
+        const requestHandler: RequestListener = async (req: IncomingMessage, res: ServerResponse) => {
+            const route = url.parse(`${req.url}`).pathname;
+            if (route === '/metrics') {
+                const result = await promRegister.metrics();
+
+                res.setHeader('Content-Type', promRegister.contentType);
+                res.end(result);
+            } else {
+                res.end('');
+            }
+        };
+        const server: Server = http.createServer(requestHandler);
+        server.listen(port);
     }
 
     public getCurrent() {

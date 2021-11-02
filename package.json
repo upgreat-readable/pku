@@ -35,6 +35,7 @@
         "fs": "0.0.1-security",
         "http": "0.0.1-security",
         "node-ipc": "^9.1.1",
+        "prom-client": "^14.0.0",
         "socket.io": "^2.4.1",
         "typescript": "^4.0.3",
         "winston": "^3.3.3"
