@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.11.0) (2021-11-02)
+
+### Features
+
+-   **package:** новая версия критериев
+-   **readme:** правка ридми, параметра time - 10
+
 ## [1.10.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.10.0) (2021-11-02)
 
 ### Features
