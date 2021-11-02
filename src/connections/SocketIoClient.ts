@@ -92,7 +92,6 @@ export class SocketIoClient {
                 connectedSockets.dec();
                 disconnectTotal.inc();
             })
-
             .on('connect_error', () => {
                 connectedSockets.dec();
                 disconnectTotal.inc();
