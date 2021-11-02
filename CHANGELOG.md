@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.10.0) (2021-11-02)
+
+### Features
+
+-   **metric:** внутренняя логика для тест пку, для финала
+-   **logs:** расширенные логи
+
 ## [1.9.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.9.0) (2021-10-31)
 
 ### Features
