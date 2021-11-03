@@ -63,11 +63,6 @@ export class SocketIoClient {
      * Обработка событий инициированных удаленным сервером
      */
     private handleRemoteEvents() {
-        const connectedSockets = new Gauge({
-            name: 'socket_io_connected',
-            help: 'Number of currently connected sockets',
-        });
-
         const connectTotal = new Counter({
             name: 'socket_io_connect_total',
             help: 'Total count of socket.io connection requests',
@@ -78,52 +73,81 @@ export class SocketIoClient {
             help: 'Total count of socket.io disconnections',
         });
 
+        const connectErrorTotal = new Counter({
+            name: 'socket_io_connect_error_total',
+            help: 'Total count of socket.io connect error',
+        });
+
+        const connectTimeoutTotal = new Counter({
+            name: 'socket_io_connect_timeout_total',
+            help: 'Total count of socket.io connect timeout',
+        });
+
+        const reconnectAttemptTotal = new Counter({
+            name: 'socket_io_reconnect_attempt_total',
+            help: 'Total count of socket.io reconnect attempt',
+        });
+
+        const reconnectErrorTotal = new Counter({
+            name: 'socket_io_reconnect_error_total',
+            help: 'Total count of socket.io reconnect error',
+        });
+
+        const reconnectFailedTotal = new Counter({
+            name: 'socket_io_reconnect_failed_total',
+            help: 'Total count of socket.io reconnect failed',
+        });
+
+        const reconnectTotal = new Counter({
+            name: 'socket_io_reconnect_total',
+            help: 'Total count of socket.io reconnect',
+        });
+
+        const errorTotal = new Counter({
+            name: 'socket_io_error_total',
+            help: 'Total count of socket.io error',
+        });
+
         this.socket
             .on('connect', () => {
                 connectTotal.inc();
-                connectedSockets.inc();
                 LoggingService.process(logger, { level: 'info', message: 'установлено подключение к сокету удалённого сервера', group: 'socket.io' });
 
                 LoggingService.process(logger, { level: 'info', message: 'запрос на получение пропущенного файла', group: 'socket.io' });
                 this.socket.emit('session-file-repeat', { lastFileId: new GetNextFileService().getFileName() });
             })
             .on('disconnect', () => {
-                this.sendToClient('disconnect', 'error');
-                connectedSockets.dec();
                 disconnectTotal.inc();
+                this.sendToClient('disconnect', 'error');
             })
             .on('connect_error', () => {
-                connectedSockets.dec();
-                disconnectTotal.inc();
+                connectErrorTotal.inc();
                 this.sendToClient('disconnect', 'error');
             })
             .on('connect_timeout', () => {
-                connectedSockets.dec();
-                disconnectTotal.inc();
+                connectTimeoutTotal.inc();
                 this.sendToClient('disconnect', 'error');
             })
-            .on('reconnect_attempt', () => this.sendToClient('reconnect_attempt'))
+            .on('reconnect_attempt', () => {
+                reconnectAttemptTotal.inc();
+                this.sendToClient('reconnect_attempt');
+            })
             .on('reconnect_error', () => {
-                connectedSockets.dec();
-                disconnectTotal.inc();
+                reconnectErrorTotal.inc();
                 this.sendToClient('reconnect_error', 'error');
             })
             .on('reconnect_failed', () => {
-                connectedSockets.dec();
-                disconnectTotal.inc();
+                reconnectFailedTotal.inc();
                 this.sendToClient('reconnect_failed', 'error');
             })
             .on('reconnect', () => {
+                reconnectTotal.inc();
                 this.sendToClient('reconnect');
-                connectTotal.inc();
-                connectedSockets.inc();
                 LoggingService.process(logger, { level: 'info', message: 'запрос на получение пропущенного файла', group: 'socket.io' });
                 this.socket.emit('session-file-repeat', { lastFileId: new GetNextFileService().getFileName() });
             })
-
             .on('error', (error: Object) => {
-                connectedSockets.dec();
-                disconnectTotal.inc();
+                errorTotal.inc();
                 LoggingService.process(logger, { level: 'error', message: error.toString(), error, group: 'socket.io' });
             });
     }

@@ -4,7 +4,7 @@ import { LogEntry } from 'winston';
 import http, { IncomingMessage, RequestListener, Server, ServerResponse } from 'http';
 import * as url from 'url';
 
-import promClient from 'prom-client';
+import promClient, { Gauge } from 'prom-client';
 
 import { IPCServerLogger } from '../logger';
 import { isDebug, socketPath } from '../config';
@@ -62,10 +62,21 @@ export class IPCServer {
     public initHttpMetricServer() {
         const promRegister = promClient.register;
 
+        const connectedSockets = new Gauge({
+            name: 'socket_io_connected',
+            help: 'Is the connection active or not',
+        });
+
         const port = 3000;
         const requestHandler: RequestListener = async (req: IncomingMessage, res: ServerResponse) => {
             const route = url.parse(`${req.url}`).pathname;
             if (route === '/metrics') {
+                connectedSockets.reset();
+                const isConnected = this.session.client.isConnect() ?? false;
+                if (isConnected) {
+                    connectedSockets.inc();
+                }
+
                 const result = await promRegister.metrics();
 
                 res.setHeader('Content-Type', promRegister.contentType);
