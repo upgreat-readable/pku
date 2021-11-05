@@ -143,8 +143,6 @@ export class SocketIoClient {
             .on('reconnect', () => {
                 reconnectTotal.inc();
                 this.sendToClient('reconnect');
-                LoggingService.process(logger, { level: 'info', message: 'запрос на получение пропущенного файла', group: 'socket.io' });
-                this.socket.emit('session-file-repeat', { lastFileId: new GetNextFileService().getFileName() });
             })
             .on('error', (error: Object) => {
                 errorTotal.inc();
