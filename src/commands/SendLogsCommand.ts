@@ -18,7 +18,7 @@ class SendLogsCommand extends AbstractCommand {
     description: string = 'Команда отправки логов';
 
     protected bindOptions(command: Command) {
-        command.requiredOption('--date <date>', 'дата в формате ISO', /^\d{4}-\d\d-\d\d$/);
+        command.option('--date <date>', 'дата в формате ISO', /^\d{4}-\d\d-\d\d$/);
     }
 
     /**
@@ -26,7 +26,11 @@ class SendLogsCommand extends AbstractCommand {
      */
     protected action = async (options: SendLogsCommandOptions) => {
         await new Promise(resolve => {
-            this.validateOptions(options);
+            // this.validateOptions(options);
+            if (!options.date) {
+                // eslint-disable-next-line no-param-reassign
+                options.date = new Date().toISOString().substring(0, 10);
+            }
 
             const logEntries = LogPersistenceService.getUnsentDayLogEntries(options.date);
             if (logEntries.entries.length === 0) {
