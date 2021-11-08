@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.15.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.15.0) (2021-11-08)
+
+### Features
+
+-   **logs** - parameter date in sendlogs is optional now
+
 ## [1.14.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.14.0) (2021-11-05)
 
 ### Features
