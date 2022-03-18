@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.16.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.16.0) (2022-03-18)
+
+### Features
+
+-   **feature** - in view of the vulnerability of the node-ipc package, the version was hardcoded, also updated the version of the PSR package
+
 ## [1.15.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.15.0) (2021-11-08)
 
 ### Features
