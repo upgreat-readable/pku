@@ -29,7 +29,7 @@
         "@types/socket.io": "^2.1.11",
         "@types/socket.io-client": "^1.4.33",
         "@upgreat-readable/criteria": "^1.2.3",
-        "@upgreat-readable/psr": "^1.6.0",
+        "@upgreat-readable/psr": "^1.9.0",
         "commander": "^6.1.0",
         "commander-ts": "^0.1.5",
         "fs": "0.0.1-security",
