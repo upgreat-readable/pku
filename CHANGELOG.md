@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.17.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.17.0) (2022-07-12)
+
+### Features
+
+-   **feature** - updated the version of the PSR package
+
 ## [1.16.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.16.0) (2022-03-18)
 
 ### Features
