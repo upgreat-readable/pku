@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.18.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.18.0) (2022-07-13)
+
+### Features
+
+-   **fix** - correct essay uuid
+
 ## [1.17.0](https://github.com/upgreat-readable/pku/compare/v1.0.7...v1.17.0) (2022-07-12)
 
 ### Features
