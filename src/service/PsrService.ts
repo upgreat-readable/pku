@@ -1,5 +1,6 @@
-//@ts-ignore
+// @ts-ignore
 import MetricService from '@upgreat-readable/psr';
+
 import { FileCollection } from '../files/FileCollection';
 import { File } from '../files/File';
 
@@ -15,7 +16,7 @@ export class PsrService {
      */
     constructor(fileCollection: FileCollection) {
         this.fileCollection = fileCollection;
-        let readyToPsrEntity = this.implodeFilesToPsrFormat(this.fileCollection.files);
+        const readyToPsrEntity = this.implodeFilesToPsrFormat(this.fileCollection.files);
         this.readyObject = new MetricService().calculate(readyToPsrEntity);
     }
 
@@ -32,7 +33,7 @@ export class PsrService {
             throw new Error('Ошибка. ПСР был запущен для одной разметки.');
         }
 
-        let PsrObject: any = {
+        const PsrObject: any = {
             essay: {
                 id: '',
                 meta: {},
@@ -41,11 +42,12 @@ export class PsrService {
             },
         };
         let i = 0;
+
         files.forEach((value, index, array) => {
             /* Считываем контент из файла */
-            let jsonContent = value.getJson();
+            const jsonContent = value.getJson();
             if (index === 0) {
-                PsrObject.essay.id = 'test-id-essay';
+                PsrObject.essay.id = jsonContent.meta['uuid'];
                 PsrObject.essay.meta = jsonContent.meta;
                 PsrObject.essay.text = jsonContent.text;
             }
