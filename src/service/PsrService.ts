@@ -58,7 +58,7 @@ export class PsrService {
             }
 
             PsrObject.essay.markups.push({
-                id: i,
+                id: jsonContent.meta.markupUuid,
                 isExpert: expertMark,
                 third: false,
                 criteria: jsonContent.criteria,
