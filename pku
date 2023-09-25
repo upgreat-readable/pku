@@ -1,4 +1,7 @@
 #!/bin/bash
+
+cd "$(dirname "$0")"
+
 IS_RUNNING=$(docker-compose ps -q node-pku)
 if [[ "$IS_RUNNING" != "" ]]; then
   docker-compose exec -T node-pku sh -c "node build/bin/pku.js $*"
